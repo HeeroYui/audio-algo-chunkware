@@ -23,43 +23,33 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef __AUDIO_ALGO_CHUNKWARE_GATE_RMS_H__
+#define __AUDIO_ALGO_CHUNKWARE_GATE_RMS_H__
 
-#ifndef __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
-#define __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
-
-#include <etk/types.h>
+#include <audio/algo/chunkware/Gate.h>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			// USE:
-			// 1. init envelope state to DC_OFFSET before processing
-			// 2. add to input before envelope runtime function
-			static const double DC_OFFSET = 1.0E-25;
-			class EnvelopeDetector {
+			class GateRms : public Gate {
 				public:
-					EnvelopeDetector(double _ms = 1.0,
-					                 double _sampleRate = 44100.0);
-					virtual ~EnvelopeDetector() {}
-					// time constant
-					virtual void setTc(double _ms);
-					virtual double getTc() const {
-						return m_timeMs;
-					}
+					GateRms();
+					virtual ~GateRms() {}
 					// sample rate
 					virtual void setSampleRate(double _sampleRate);
-					virtual double getSampleRate() const {
-						return m_sampleRate;
+					// RMS window
+					virtual void setWindow(double _ms);
+					virtual double getWindow() const {
+						return m_averager.getTc();
 					}
-					// runtime function
-					void run(double _in, double& _state) {
-						_state = _in + m_coefficient * (_state - _in);
-					}
-				protected:
-					double m_sampleRate; //!< sample rate
-					double m_timeMs; //!< time constant in ms
-					double m_coefficient; //!< runtime coefficient
-					virtual void setCoef(); //!< coef calculation
+					// runtime process
+					// call before runtime (in resume())
+					virtual void initRuntime();
+					// gate runtime process
+					void process(double& _in1, double& _in2);
+				private:
+					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
+					double m_averageSuares; //!< average of squares
 			};
 		}
 	}

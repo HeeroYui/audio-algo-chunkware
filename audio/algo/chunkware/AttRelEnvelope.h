@@ -32,48 +32,45 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			//-------------------------------------------------------------
-			// attack/release envelope
-			//-------------------------------------------------------------
 			class AttRelEnvelope {
 				public:
-					AttRelEnvelope(double m_attackms = 10.0,
-					               double m_releasems = 100.0,
-					               double sampleRate = 44100.0);
+					AttRelEnvelope(double _attackms = 10.0,
+					               double _releasems = 100.0,
+					               double _sampleRate = 44100.0);
 					virtual ~AttRelEnvelope() {}
 					// attack time constant
-					virtual void   setAttack(double ms);
+					virtual void setAttack(double _ms);
 					virtual double getAttack() const {
 						return m_attack.getTc();
 					}
 					// release time constant
-					virtual void   setRelease(double ms);
+					virtual void setRelease(double _ms);
 					virtual double getRelease() const {
 						return m_release.getTc();
 					}
 					// sample rate dependencies
-					virtual void   setSampleRate(double sampleRate);
+					virtual void setSampleRate(double _sampleRate);
 					virtual double getSampleRate() const {
 						return m_attack.getSampleRate();
 					}
 					// runtime function
-					void run(double in, double &state) {
+					void run(double _in, double& _state) {
 						/* assumes that:
 						* positive delta = attack
 						* negative delta = release
 						* good for linear & log values
 						*/
-						if (in > state) {
+						if (_in > _state) {
 							// attack
-							m_attack.run(in, state);
+							m_attack.run(_in, _state);
 						} else {
 							// release
-							m_release.run(in, state);
+							m_release.run(_in, _state);
 						}
 					}
 				private:
-					EnvelopeDetector m_attack;
-					EnvelopeDetector m_release;
+					audio::algo::chunkware::EnvelopeDetector m_attack;
+					audio::algo::chunkware::EnvelopeDetector m_release;
 			};
 		}
 	}

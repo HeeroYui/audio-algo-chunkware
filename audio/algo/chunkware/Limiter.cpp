@@ -43,25 +43,25 @@ audio::algo::chunkware::Limiter::Limiter() :
 	m_outputBuffer[ 1 ].resize(BUFFER_SIZE, 0.0);
 }
 
-void audio::algo::chunkware::Limiter::setThresh(double dB) {
-	m_threshdB = dB;
-	m_threshold = dB2lin(dB);
+void audio::algo::chunkware::Limiter::setThresh(double _dB) {
+	m_threshdB = _dB;
+	m_threshold = dB2lin(_dB);
 }
 
-void audio::algo::chunkware::Limiter::setAttack(double ms) {
-	unsigned int samp = int(0.001 * ms * m_attack.getSampleRate());
+void audio::algo::chunkware::Limiter::setAttack(double _ms) {
+	unsigned int samp = int(0.001 * _ms * m_attack.getSampleRate());
 	AA_CHUNK_ASSERT(samp < BUFFER_SIZE, "input function error");
 	m_peakHold = samp;
-	m_attack.setTc(ms);
+	m_attack.setTc(_ms);
 }
 
-void audio::algo::chunkware::Limiter::setRelease(double ms) {
-	m_release.setTc(ms);
+void audio::algo::chunkware::Limiter::setRelease(double _ms) {
+	m_release.setTc(_ms);
 }
 
-void audio::algo::chunkware::Limiter::setSampleRate(double sampleRate) {
-	m_attack.setSampleRate(sampleRate);
-	m_release.setSampleRate(sampleRate);
+void audio::algo::chunkware::Limiter::setSampleRate(double _sampleRate) {
+	m_attack.setSampleRate(_sampleRate);
+	m_release.setSampleRate(_sampleRate);
 }
 
 void audio::algo::chunkware::Limiter::initRuntime() {
@@ -79,10 +79,10 @@ void audio::algo::chunkware::Limiter::FastEnvelope::setCoef() {
 }
 
 
-void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
+void audio::algo::chunkware::Limiter::process(double& _in1, double& _in2) {
 	// create sidechain
-	double rect1 = fabs(in1); // rectify input
-	double rect2 = fabs(in2);
+	double rect1 = fabs(_in1); // rectify input
+	double rect2 = fabs(_in2);
 	double keyLink = std::max(rect1, rect2); // link channels with greater of 2
 	// threshold
 	// we always want to feed the sidechain AT LEATS the threshold value
@@ -136,16 +136,16 @@ void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
 	// (m_cursor - delay) & m_bufferMask gets sample from [delay] samples ago
 	// m_bufferMask variable wraps index
 	unsigned int delayIndex = (m_cursor - m_peakHold) & m_bufferMask;
-	double delay1 = m_outputBuffer[ 0 ][ delayIndex ];
-	double delay2 = m_outputBuffer[ 1 ][ delayIndex ];
+	double delay1 = m_outputBuffer[0][delayIndex];
+	double delay2 = m_outputBuffer[1][delayIndex];
 	// load current buffer index and advance current index
 	// m_bufferMask wraps m_cursor index
-	m_outputBuffer[ 0 ][ m_cursor ] = in1;
-	m_outputBuffer[ 1 ][ m_cursor ] = in2;
+	m_outputBuffer[0][m_cursor] = _in1;
+	m_outputBuffer[1][m_cursor] = _in2;
 	++m_cursor &= m_bufferMask;
 	// output gain
-	in1 = delay1 * gR;	// apply gain reduction to input
-	in2 = delay2 * gR;
+	_in1 = delay1 * gR;	// apply gain reduction to input
+	_in2 = delay2 * gR;
 	/* REGARDING THE GAIN REDUCTION: Due to the logarithmic nature
 	 * of the attack phase, the sidechain will never achieve "full"
 	 * attack. (Actually, it is only guaranteed to achieve 99% of

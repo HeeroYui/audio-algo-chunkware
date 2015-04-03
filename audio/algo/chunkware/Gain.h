@@ -33,18 +33,15 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			//-------------------------------------------------------------
-			// gain functions
-			//-------------------------------------------------------------
 			// linear -> dB conversion
-			static inline double lin2dB(double lin) {
+			static inline double lin2dB(double _lin) {
 				static const double LOG_2_DB = 8.6858896380650365530225783783321;	// 20 / ln(10)
-				return log(lin) * LOG_2_DB;
+				return log(_lin) * LOG_2_DB;
 			}
 			// dB -> linear conversion
-			static inline double dB2lin(double dB) {
+			static inline double dB2lin(double _dB) {
 				static const double DB_2_LOG = 0.11512925464970228420089957273422;	// ln(10) / 20
-				return exp(dB * DB_2_LOG);
+				return exp(_dB * DB_2_LOG);
 			}
 		}
 	}

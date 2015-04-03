@@ -32,20 +32,22 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class CompresssorRms : public Compresssor {
+			class CompresssorRms : public audio::algo::chunkware::Compresssor {
 				public:
 					CompresssorRms();
 					virtual ~CompresssorRms() {}
 					// sample rate
-					virtual void setSampleRate(double sampleRate);
+					virtual void setSampleRate(double _sampleRate);
 					// RMS window
-					virtual void setWindow(double ms);
-					virtual double getWindow() const { return m_averager.getTc(); }
+					virtual void setWindow(double _ms);
+					virtual double getWindow() const {
+						return m_averager.getTc();
+					}
 					// runtime process
-					virtual void initRuntime();			// call before runtime (in resume())
-					void process(double &in1, double &in2);	// compressor runtime process
+					virtual void initRuntime(); // call before runtime (in resume())
+					void process(double& _in1, double& _in2); // compressor runtime process
 				protected:
-					EnvelopeDetector m_averager; //!< averager
+					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
 					double m_averageSuares; //!< average of squares
 			};
 		}

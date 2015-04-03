@@ -26,25 +26,25 @@
 
 #include <audio/algo/chunkware/AttRelEnvelope.h>
 
-audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double m_attackms, double m_releasems, double sampleRate) :
-  m_attack(m_attackms, sampleRate),
-  m_release(m_releasems, sampleRate) {
+audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double _attackms, double _releasems, double _sampleRate) :
+  m_attack(_attackms, _sampleRate),
+  m_release(_releasems, _sampleRate) {
 	
 }
 
 //-------------------------------------------------------------
-void audio::algo::chunkware::AttRelEnvelope::setAttack(double ms) {
-	m_attack.setTc(ms);
+void audio::algo::chunkware::AttRelEnvelope::setAttack(double _ms) {
+	m_attack.setTc(_ms);
 }
 
 //-------------------------------------------------------------
-void audio::algo::chunkware::AttRelEnvelope::setRelease(double ms) {
-	m_release.setTc(ms);
+void audio::algo::chunkware::AttRelEnvelope::setRelease(double _ms) {
+	m_release.setTc(_ms);
 }
 
 //-------------------------------------------------------------
-void audio::algo::chunkware::AttRelEnvelope::setSampleRate(double sampleRate) {
-	m_attack.setSampleRate(sampleRate);
-	m_release.setSampleRate(sampleRate);
+void audio::algo::chunkware::AttRelEnvelope::setSampleRate(double _sampleRate) {
+	m_attack.setSampleRate(_sampleRate);
+	m_release.setSampleRate(_sampleRate);
 }
 

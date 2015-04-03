@@ -34,9 +34,9 @@ audio::algo::chunkware::Gate::Gate() :
 	
 }
 
-void audio::algo::chunkware::Gate::setThresh(double dB) {
-	m_threshdB = dB;
-	m_threshold = dB2lin(dB);
+void audio::algo::chunkware::Gate::setThresh(double _dB) {
+	m_threshdB = _dB;
+	m_threshold = dB2lin(_dB);
 }
 
 void audio::algo::chunkware::Gate::initRuntime() {
@@ -44,25 +44,25 @@ void audio::algo::chunkware::Gate::initRuntime() {
 }
 
 
-void audio::algo::chunkware::Gate::process(double &in1, double &in2) {
+void audio::algo::chunkware::Gate::process(double& _in1, double& _in2) {
 	// create sidechain
-	double rect1 = fabs(in1);	// rectify input
-	double rect2 = fabs(in2);
+	double rect1 = fabs(_in1);	// rectify input
+	double rect2 = fabs(_in2);
 	/* if desired, one could use another EnvelopeDetector to smooth
 	 * the rectified signal.
 	 */
 	double link = std::max(rect1, rect2);	// link channels with greater of 2
-	process(in1, in2, link);	// rest of process
+	process(_in1, _in2, link);	// rest of process
 }
 
-void audio::algo::chunkware::Gate::process(double &in1, double &in2, double keyLinked) {
-	keyLinked = fabs(keyLinked);	// rectify (just in case)
+void audio::algo::chunkware::Gate::process(double& _in1, double& _in2, double _keyLinked) {
+	_keyLinked = fabs(_keyLinked);	// rectify (just in case)
 	// threshold
 	// key over threshold (0.0 or 1.0)
-	double over = double(keyLinked > m_threshold);
+	double over = double(_keyLinked > m_threshold);
 	// attack/release
 	over += DC_OFFSET;					// add DC offset to avoid denormal
-	AttRelEnvelope::run(over, m_overThresholdEnvelope);	// run attack/release
+	audio::algo::chunkware::AttRelEnvelope::run(over, m_overThresholdEnvelope);	// run attack/release
 	over = m_overThresholdEnvelope - DC_OFFSET;			// subtract DC offset
 	/* REGARDING THE DC OFFSET: In this case, since the offset is added before 
 	 * the attack/release processes, the envelope will never fall below the offset,
@@ -71,6 +71,6 @@ void audio::algo::chunkware::Gate::process(double &in1, double &in2, double keyL
 	 * a minimum value of 0dB.
 	 */
 	// output gain
-	in1 *= over;	// apply gain reduction to input
-	in2 *= over;
+	_in1 *= over;	// apply gain reduction to input
+	_in2 *= over;
 }

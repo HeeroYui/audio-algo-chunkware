@@ -35,17 +35,14 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			//-------------------------------------------------------------
-			// simple limiter
-			//-------------------------------------------------------------
 			class Limiter {
 				public:
 					Limiter();
 					virtual ~Limiter() {}
 					// parameters
-					virtual void setThresh(double dB);
-					virtual void setAttack(double ms);
-					virtual void setRelease(double ms);
+					virtual void setThresh(double _dB);
+					virtual void setAttack(double _ms);
+					virtual void setRelease(double _ms);
 					virtual double getThresh() const {
 						return m_threshdB;
 					}
@@ -60,7 +57,7 @@ namespace audio {
 						return m_peakHold;
 					}
 					// sample rate dependencies
-					virtual void   setSampleRate(double sampleRate);
+					virtual void   setSampleRate(double _sampleRate);
 					virtual double getSampleRate() {
 						return m_attack.getSampleRate();
 					}
@@ -68,13 +65,13 @@ namespace audio {
 					// call before runtime (in resume())
 					virtual void initRuntime();
 					// limiter runtime process
-					void process(double &in1, double &in2);
+					void process(double& _in1, double& _in2);
 				protected:
 					// class for faster attack/release
-					class FastEnvelope : public EnvelopeDetector {
+					class FastEnvelope : public audio::algo::chunkware::EnvelopeDetector {
 						public:
-							FastEnvelope(double ms = 1.0, double sampleRate = 44100.0) :
-							  EnvelopeDetector(ms, sampleRate) {
+							FastEnvelope(double _ms = 1.0, double _sampleRate = 44100.0) :
+							  EnvelopeDetector(_ms, _sampleRate) {
 								
 							}
 							virtual ~FastEnvelope() {}
@@ -91,8 +88,8 @@ namespace audio {
 					unsigned int m_peakTimer; //!< peak hold timer
 					double m_maxPeak; //!< max peak
 					// attack/release envelope
-					FastEnvelope m_attack; //!< attack
-					FastEnvelope m_release; //!< release
+					audio::algo::chunkware::Limiter::FastEnvelope m_attack; //!< attack
+					audio::algo::chunkware::Limiter::FastEnvelope m_release; //!< release
 					double m_overThresholdEnvelope; //!< over-threshold envelope (linear)
 					// buffer
 					// BUFFER_SIZE default can handle up to ~10ms at 96kHz

@@ -34,13 +34,13 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class Compresssor : public AttRelEnvelope {
+			class Compresssor : public audio::algo::chunkware::AttRelEnvelope {
 				public:
 					Compresssor();
 					virtual ~Compresssor() {}
 					// parameters
-					virtual void setThresh(double dB);
-					virtual void setRatio(double dB);
+					virtual void setThresh(double _dB);
+					virtual void setRatio(double _dB);
 					virtual double getThresh() const {
 						return m_threshdB;
 					}
@@ -51,9 +51,9 @@ namespace audio {
 					// call before runtime (in resume())
 					virtual void initRuntime();
 					// compressor runtime process
-					void process(double &in1, double &in2);
+					void process(double& _in1, double& _in2);
 					// with stereo-linked key in
-					void process(double &in1, double &in2, double keyLinked);
+					void process(double& _in1, double& _in2, double _keyLinked);
 				private:
 					// transfer function
 					double m_threshdB;//!< threshold (dB)

@@ -27,23 +27,23 @@
 #include <audio/algo/chunkware/debug.h>
 #include <audio/algo/chunkware/EnvelopeDetector.h>
 
-audio::algo::chunkware::EnvelopeDetector::EnvelopeDetector(double ms, double sampleRate) {
-	AA_CHUNK_ASSERT(sampleRate > 0.0, "input function error");
-	AA_CHUNK_ASSERT(ms > 0.0, "input function error");
-	m_sampleRate = sampleRate;
-	m_timeMs = ms;
+audio::algo::chunkware::EnvelopeDetector::EnvelopeDetector(double _ms, double _sampleRate) {
+	AA_CHUNK_ASSERT(_sampleRate > 0.0, "input function error");
+	AA_CHUNK_ASSERT(_ms > 0.0, "input function error");
+	m_sampleRate = _sampleRate;
+	m_timeMs = _ms;
 	setCoef();
 }
 
-void audio::algo::chunkware::EnvelopeDetector::setTc(double ms) {
-	AA_CHUNK_ASSERT(ms > 0.0, "input function error");
-	m_timeMs = ms;
+void audio::algo::chunkware::EnvelopeDetector::setTc(double _ms) {
+	AA_CHUNK_ASSERT(_ms > 0.0, "input function error");
+	m_timeMs = _ms;
 	setCoef();
 }
 
-void audio::algo::chunkware::EnvelopeDetector::setSampleRate(double sampleRate) {
-	AA_CHUNK_ASSERT(sampleRate > 0.0, "input function error");
-	m_sampleRate = sampleRate;
+void audio::algo::chunkware::EnvelopeDetector::setSampleRate(double _sampleRate) {
+	AA_CHUNK_ASSERT(_sampleRate > 0.0, "input function error");
+	m_sampleRate = _sampleRate;
 	setCoef();
 }
 

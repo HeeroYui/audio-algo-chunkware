@@ -24,43 +24,41 @@
  */
 
 
-#include <audio/algo/chunkware/CompressorRms.h>
+#include <audio/algo/chunkware/GateRms.h>
 
-
-audio::algo::chunkware::CompresssorRms::CompresssorRms() :
+audio::algo::chunkware::GateRms::GateRms() :
   m_averager(5.0),
   m_averageSuares(DC_OFFSET) {
 	
 }
 
-void audio::algo::chunkware::CompresssorRms::setSampleRate(double _sampleRate) {
-	audio::algo::chunkware::Compresssor::setSampleRate(_sampleRate);
+void audio::algo::chunkware::GateRms::setSampleRate(double _sampleRate) {
+	audio::algo::chunkware::Gate::setSampleRate(_sampleRate);
 	m_averager.setSampleRate(_sampleRate);
 }
 
-void audio::algo::chunkware::CompresssorRms::setWindow(double _ms) {
+void audio::algo::chunkware::GateRms::setWindow(double _ms) {
 	m_averager.setTc(_ms);
 }
 
-void audio::algo::chunkware::CompresssorRms::initRuntime() {
-	audio::algo::chunkware::Compresssor::initRuntime();
+void audio::algo::chunkware::GateRms::initRuntime() {
+	audio::algo::chunkware::Gate::initRuntime();
 	m_averageSuares = DC_OFFSET;
 }
 
-void audio::algo::chunkware::CompresssorRms::process(double& _in1, double& _in2) {
+void audio::algo::chunkware::GateRms::process(double& _in1, double& _in2) {
 	// create sidechain
 	double inSq1 = _in1 * _in1;	// square input
 	double inSq2 = _in2 * _in2;
-	double sum = inSq1 + inSq2; // power summing
-	sum += DC_OFFSET; // DC offset, to prevent denormal
-	m_averager.run(sum, m_averageSuares); // average of squares
-	double rms = sqrt(m_averageSuares); // rms (sort of ...)
+	double sum = inSq1 + inSq2;			// power summing
+	sum += DC_OFFSET;					// DC offset, to prevent denormal
+	m_averager.run(sum, m_averageSuares);		// average of squares
+	double rms = sqrt(m_averageSuares);	// rms (sort of ...)
 	/* REGARDING THE RMS AVERAGER: Ok, so this isn't a REAL RMS
 	 * calculation. A true RMS is an FIR moving average. This
 	 * approximation is a 1-pole IIR. Nonetheless, in practice,
 	 * and in the interest of simplicity, this method will suffice,
 	 * giving comparable results.
 	 */
-	// rest of process
-	audio::algo::chunkware::Compresssor::process(_in1, _in2, rms);
+	audio::algo::chunkware::Gate::process(_in1, _in2, rms);	// rest of process
 }

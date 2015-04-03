@@ -34,42 +34,42 @@ audio::algo::chunkware::Compresssor::Compresssor() :
 	
 }
 
-void audio::algo::chunkware::Compresssor::setThresh(double dB) {
-	m_threshdB = dB;
+void audio::algo::chunkware::Compresssor::setThresh(double _dB) {
+	m_threshdB = _dB;
 }
 
-void audio::algo::chunkware::Compresssor::setRatio(double ratio) {
-	AA_CHUNK_ASSERT(ratio > 0.0, "input function error");
-	m_ratio = ratio;
+void audio::algo::chunkware::Compresssor::setRatio(double _ratio) {
+	AA_CHUNK_ASSERT(_ratio > 0.0, "input function error");
+	m_ratio = _ratio;
 }
 
 void audio::algo::chunkware::Compresssor::initRuntime() {
 	m_overThresholdEnvelopeDB = DC_OFFSET;
 }
 
-void audio::algo::chunkware::Compresssor::process(double &in1, double &in2) {
+void audio::algo::chunkware::Compresssor::process(double& _in1, double& _in2) {
 	// create sidechain
-	double rect1 = fabs(in1);	// rectify input
-	double rect2 = fabs(in2);
+	double rect1 = fabs(_in1);	// rectify input
+	double rect2 = fabs(_in2);
 	/* if desired, one could use another EnvelopeDetector to smooth
 	 * the rectified signal.
 	 */
 	double link = std::max(rect1, rect2);	// link channels with greater of 2
-	process(in1, in2, link);	// rest of process
+	process(_in1, _in2, link);	// rest of process
 }
 
-void audio::algo::chunkware::Compresssor::process(double &in1, double &in2, double keyLinked) {
-	keyLinked = fabs(keyLinked);		// rectify (just in case)
+void audio::algo::chunkware::Compresssor::process(double& _in1, double& _in2, double _keyLinked) {
+	_keyLinked = fabs(_keyLinked);		// rectify (just in case)
 	// convert key to dB
-	keyLinked += DC_OFFSET;				// add DC offset to avoid log(0)
-	double keydB = lin2dB(keyLinked);	// convert linear -> dB
+	_keyLinked += DC_OFFSET;				// add DC offset to avoid log(0)
+	double keydB = lin2dB(_keyLinked);	// convert linear -> dB
 	// threshold
 	double overdB = keydB - m_threshdB;	// delta over threshold
 	if (overdB < 0.0)
 		overdB = 0.0;
 	// attack/release
 	overdB += DC_OFFSET; // add DC offset to avoid denormal
-	AttRelEnvelope::run(overdB, m_overThresholdEnvelopeDB); // run attack/release envelope
+	audio::algo::chunkware::AttRelEnvelope::run(overdB, m_overThresholdEnvelopeDB); // run attack/release envelope
 	overdB = m_overThresholdEnvelopeDB - DC_OFFSET; // subtract DC offset
 	/* REGARDING THE DC OFFSET: In this case, since the offset is added before 
 	 * the attack/release processes, the envelope will never fall below the offset,
@@ -81,7 +81,7 @@ void audio::algo::chunkware::Compresssor::process(double &in1, double &in2, doub
 	double gr = overdB * (m_ratio - 1.0);	// gain reduction (dB)
 	gr = dB2lin(gr);						// convert dB -> linear
 	// output gain
-	in1 *= gr;	// apply gain reduction to input
-	in2 *= gr;
+	_in1 *= gr;	// apply gain reduction to input
+	_in2 *= gr;
 }
 
