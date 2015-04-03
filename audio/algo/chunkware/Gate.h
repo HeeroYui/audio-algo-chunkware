@@ -27,16 +27,13 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_GATE_H__
 #define __AUDIO_ALGO_CHUNKWARE_GATE_H__
 
-#include "header.h"
-#include "AttRelEnvelope.h"
-#include "Gain.h"
+#include <etk/types.h>
+#include <audio/algo/chunkware/AttRelEnvelope.h>
+#include <audio/algo/chunkware/Gain.h>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			//-------------------------------------------------------------
-			// simple gate
-			//-------------------------------------------------------------
 			class Gate : public AttRelEnvelope {
 				public:
 					Gate();
@@ -44,7 +41,7 @@ namespace audio {
 					// parameters
 					virtual void setThresh(double dB);
 					virtual double getThresh() const {
-						return threshdB_;
+						return m_threshdB;
 					}
 					// runtime
 					// call before runtime (in resume())
@@ -55,33 +52,10 @@ namespace audio {
 					void process(double &in1, double &in2, double keyLinked);
 				private:
 					// transfer function
-					double threshdB_; //!< threshold (dB)
-					double thresh_; //!< threshold (linear)
+					double m_threshdB; //!< threshold (dB)
+					double m_threshold; //!< threshold (linear)
 					// runtime variables
-					double env_; //!< over-threshold envelope (linear)
-			};
-			//-------------------------------------------------------------
-			// simple gate with RMS detection
-			//-------------------------------------------------------------
-			class GateRms : public Gate {
-				public:
-					GateRms();
-					virtual ~GateRms() {}
-					// sample rate
-					virtual void setSampleRate(double sampleRate);
-					// RMS window
-					virtual void setWindow(double ms);
-					virtual double getWindow() const {
-						return ave_.getTc();
-					}
-					// runtime process
-					// call before runtime (in resume())
-					virtual void initRuntime();
-					// gate runtime process
-					void process(double &in1, double &in2);
-				private:
-					EnvelopeDetector ave_; //!< averager
-					double aveOfSqrs_; //!< average of squares
+					double m_overThresholdEnvelope; //!< over-threshold envelope (linear)
 			};
 		}
 	}

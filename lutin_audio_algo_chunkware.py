@@ -16,6 +16,7 @@ def create(target):
 		'audio/algo/chunkware/EnvelopeDetector.cpp',
 		'audio/algo/chunkware/AttRelEnvelope.cpp',
 		'audio/algo/chunkware/Gate.cpp',
+		'audio/algo/chunkware/GateRms.cpp',
 		'audio/algo/chunkware/Limiter.cpp'
 		])
 	myModule.add_module_depend(['etk'])

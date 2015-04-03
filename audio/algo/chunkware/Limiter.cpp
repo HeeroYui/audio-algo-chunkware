@@ -24,57 +24,58 @@
  */
 
 
-#include "Limiter.h"
+#include <audio/algo/chunkware/Limiter.h>
+#include <audio/algo/chunkware/debug.h>
 
 audio::algo::chunkware::Limiter::Limiter() :
-  threshdB_(0.0),
-  thresh_(1.0),
-  peakHold_(0),
-  peakTimer_(0),
-  maxPeak_(1.0),
-  att_(1.0),
-  rel_(10.0),
-  env_(1.0),
-  mask_(BUFFER_SIZE-1),
-  cur_(0) {
+  m_threshdB(0.0),
+  m_threshold(1.0),
+  m_peakHold(0),
+  m_peakTimer(0),
+  m_maxPeak(1.0),
+  m_attack(1.0),
+  m_release(10.0),
+  m_overThresholdEnvelope(1.0),
+  m_bufferMask(BUFFER_SIZE-1),
+  m_cursor(0) {
 	setAttack(1.0);
-	outBuffer_[ 0 ].resize(BUFFER_SIZE, 0.0);
-	outBuffer_[ 1 ].resize(BUFFER_SIZE, 0.0);
+	m_outputBuffer[ 0 ].resize(BUFFER_SIZE, 0.0);
+	m_outputBuffer[ 1 ].resize(BUFFER_SIZE, 0.0);
 }
 
 void audio::algo::chunkware::Limiter::setThresh(double dB) {
-	threshdB_ = dB;
-	thresh_ = dB2lin(dB);
+	m_threshdB = dB;
+	m_threshold = dB2lin(dB);
 }
 
 void audio::algo::chunkware::Limiter::setAttack(double ms) {
-	unsigned int samp = int(0.001 * ms * att_.getSampleRate());
-	assert(samp < BUFFER_SIZE);
-	peakHold_ = samp;
-	att_.setTc(ms);
+	unsigned int samp = int(0.001 * ms * m_attack.getSampleRate());
+	AA_CHUNK_ASSERT(samp < BUFFER_SIZE, "input function error");
+	m_peakHold = samp;
+	m_attack.setTc(ms);
 }
 
 void audio::algo::chunkware::Limiter::setRelease(double ms) {
-	rel_.setTc(ms);
+	m_release.setTc(ms);
 }
 
 void audio::algo::chunkware::Limiter::setSampleRate(double sampleRate) {
-	att_.setSampleRate(sampleRate);
-	rel_.setSampleRate(sampleRate);
+	m_attack.setSampleRate(sampleRate);
+	m_release.setSampleRate(sampleRate);
 }
 
 void audio::algo::chunkware::Limiter::initRuntime() {
-	peakTimer_ = 0;
-	maxPeak_ = thresh_;
-	env_ = thresh_;
-	cur_ = 0;
-	outBuffer_[ 0 ].assign(BUFFER_SIZE, 0.0);
-	outBuffer_[ 1 ].assign(BUFFER_SIZE, 0.0);
+	m_peakTimer = 0;
+	m_maxPeak = m_threshold;
+	m_overThresholdEnvelope = m_threshold;
+	m_cursor = 0;
+	m_outputBuffer[ 0 ].assign(BUFFER_SIZE, 0.0);
+	m_outputBuffer[ 1 ].assign(BUFFER_SIZE, 0.0);
 }
 
 void audio::algo::chunkware::Limiter::FastEnvelope::setCoef() {
 	// rises to 99% of in value over duration of time constant
-	coef_ = pow(0.01, (1000.0 / (ms_ * sampleRate_)));
+	m_coefficient = pow(0.01, (1000.0 / (m_timeMs * m_sampleRate)));
 }
 
 
@@ -85,15 +86,15 @@ void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
 	double keyLink = std::max(rect1, rect2); // link channels with greater of 2
 	// threshold
 	// we always want to feed the sidechain AT LEATS the threshold value
-	if (keyLink < thresh_)
-		keyLink = thresh_;
+	if (keyLink < m_threshold)
+		keyLink = m_threshold;
 	// test:
 	// a) whether peak timer has "expired"
 	// b) whether new peak is greater than previous max peak
-	if ((++peakTimer_ >= peakHold_) || (keyLink > maxPeak_)) {
+	if ((++m_peakTimer >= m_peakHold) || (keyLink > m_maxPeak)) {
 		// if either condition is met:
-		peakTimer_ = 0; // reset peak timer
-		maxPeak_ = keyLink; // assign new peak to max peak
+		m_peakTimer = 0; // reset peak timer
+		m_maxPeak = keyLink; // assign new peak to max peak
 	}
 	/* REGARDING THE MAX PEAK: This method assumes that the only important
 	 * sample in a look-ahead buffer would be the highest peak. As such,
@@ -112,12 +113,12 @@ void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
 	 * envelope follower.
 	 */
 	// attack/release
-	if (maxPeak_ > env_) {
+	if (m_maxPeak > m_overThresholdEnvelope) {
 		// run attack phase
-		att_.run(maxPeak_, env_);
+		m_attack.run(m_maxPeak, m_overThresholdEnvelope);
 	} else {
 		// run release phase
-		rel_.run(maxPeak_, env_);
+		m_release.run(m_maxPeak, m_overThresholdEnvelope);
 	}
 	/* REGARDING THE ATTACK: This limiter achieves "look-ahead" detection
 	 * by allowing the envelope follower to attack the max peak, which is
@@ -130,18 +131,18 @@ void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
 	 * threshold (which is assumed to be around 1.0 linear).
 	 */
 	// gain reduction
-	double gR = thresh_ / env_;
+	double gR = m_threshold / m_overThresholdEnvelope;
 	// unload current buffer index
-	// (cur_ - delay) & mask_ gets sample from [delay] samples ago
-	// mask_ variable wraps index
-	unsigned int delayIndex = (cur_ - peakHold_) & mask_;
-	double delay1 = outBuffer_[ 0 ][ delayIndex ];
-	double delay2 = outBuffer_[ 1 ][ delayIndex ];
+	// (m_cursor - delay) & m_bufferMask gets sample from [delay] samples ago
+	// m_bufferMask variable wraps index
+	unsigned int delayIndex = (m_cursor - m_peakHold) & m_bufferMask;
+	double delay1 = m_outputBuffer[ 0 ][ delayIndex ];
+	double delay2 = m_outputBuffer[ 1 ][ delayIndex ];
 	// load current buffer index and advance current index
-	// mask_ wraps cur_ index
-	outBuffer_[ 0 ][ cur_ ] = in1;
-	outBuffer_[ 1 ][ cur_ ] = in2;
-	++cur_ &= mask_;
+	// m_bufferMask wraps m_cursor index
+	m_outputBuffer[ 0 ][ m_cursor ] = in1;
+	m_outputBuffer[ 1 ][ m_cursor ] = in2;
+	++m_cursor &= m_bufferMask;
 	// output gain
 	in1 = delay1 * gR;	// apply gain reduction to input
 	in2 = delay2 * gR;
@@ -157,11 +158,11 @@ void audio::algo::chunkware::Limiter::process(double &in1, double &in2) {
 	 *
 	 * 2) Clip the output at the threshold, as such:
 	 *
-	 *		if (in1 > thresh_) in1 = thresh_;
-	 *		else if (in1 < -thresh_) in1 = -thresh_;
+	 *		if (in1 > m_threshold) in1 = m_threshold;
+	 *		else if (in1 < -m_threshold) in1 = -m_threshold;
 	 *
-	 *		if (in2 > thresh_) in2 = thresh_;
-	 *		else if (in2 < -thresh_) in2 = -thresh_;
+	 *		if (in2 > m_threshold) in2 = m_threshold;
+	 *		else if (in2 < -m_threshold) in2 = -m_threshold;
 	 *
 	 *		(... or replace with your favorite branchless clipper ...)
 	 */

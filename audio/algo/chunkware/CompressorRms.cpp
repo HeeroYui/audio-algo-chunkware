@@ -24,27 +24,27 @@
  */
 
 
-#include "CompressorRms.h"
+#include <audio/algo/chunkware/CompressorRms.h>
 
 
 audio::algo::chunkware::CompresssorRms::CompresssorRms() :
-  ave_(5.0),
-  aveOfSqrs_(DC_OFFSET) {
+  m_averager(5.0),
+  m_averageSuares(DC_OFFSET) {
 	
 }
 
 void audio::algo::chunkware::CompresssorRms::setSampleRate(double sampleRate) {
 	audio::algo::chunkware::Compresssor::setSampleRate(sampleRate);
-	ave_.setSampleRate(sampleRate);
+	m_averager.setSampleRate(sampleRate);
 }
 
 void audio::algo::chunkware::CompresssorRms::setWindow(double ms) {
-	ave_.setTc(ms);
+	m_averager.setTc(ms);
 }
 
 void audio::algo::chunkware::CompresssorRms::initRuntime() {
 	audio::algo::chunkware::Compresssor::initRuntime();
-	aveOfSqrs_ = DC_OFFSET;
+	m_averageSuares = DC_OFFSET;
 }
 
 void audio::algo::chunkware::CompresssorRms::process(double &in1, double &in2) {
@@ -53,8 +53,8 @@ void audio::algo::chunkware::CompresssorRms::process(double &in1, double &in2) {
 	double inSq2 = in2 * in2;
 	double sum = inSq1 + inSq2; // power summing
 	sum += DC_OFFSET; // DC offset, to prevent denormal
-	ave_.run(sum, aveOfSqrs_); // average of squares
-	double rms = sqrt(aveOfSqrs_); // rms (sort of ...)
+	m_averager.run(sum, m_averageSuares); // average of squares
+	double rms = sqrt(m_averageSuares); // rms (sort of ...)
 	/* REGARDING THE RMS AVERAGER: Ok, so this isn't a REAL RMS
 	 * calculation. A true RMS is an FIR moving average. This
 	 * approximation is a 1-pole IIR. Nonetheless, in practice,

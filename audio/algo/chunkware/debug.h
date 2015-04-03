@@ -56,7 +56,7 @@ namespace audio {
 #define AA_CHUNK_ASSERT(cond,data) \
 	do { \
 		if (!(cond)) { \
-			APPL_CRITICAL(data); \
+			AA_CHUNK_CRITICAL(data); \
 			assert(!#cond); \
 		} \
 	} while (0)

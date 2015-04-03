@@ -27,7 +27,7 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
 #define __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
 
-#include "Compressor.h"
+#include <audio/algo/chunkware/Compressor.h>
 
 namespace audio {
 	namespace algo {
@@ -40,13 +40,13 @@ namespace audio {
 					virtual void setSampleRate(double sampleRate);
 					// RMS window
 					virtual void setWindow(double ms);
-					virtual double getWindow() const { return ave_.getTc(); }
+					virtual double getWindow() const { return m_averager.getTc(); }
 					// runtime process
 					virtual void initRuntime();			// call before runtime (in resume())
 					void process(double &in1, double &in2);	// compressor runtime process
 				protected:
-					EnvelopeDetector ave_; //!< averager
-					double aveOfSqrs_; //!< average of squares
+					EnvelopeDetector m_averager; //!< averager
+					double m_averageSuares; //!< average of squares
 			};
 		}
 	}

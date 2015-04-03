@@ -27,7 +27,7 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
 #define __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
 
-#include "header.h"
+#include <etk/types.h>
 
 namespace audio {
 	namespace algo {
@@ -50,21 +50,21 @@ namespace audio {
 					// time constant
 					virtual void   setTc(double ms);
 					virtual double getTc() const {
-						return ms_;
+						return m_timeMs;
 					}
 					// sample rate
 					virtual void   setSampleRate(double sampleRate);
 					virtual double getSampleRate() const {
-						return sampleRate_;
+						return m_sampleRate;
 					}
 					// runtime function
 					void run(double in, double &state) {
-						state = in + coef_ * (state - in);
+						state = in + m_coefficient * (state - in);
 					}
 				protected:
-					double sampleRate_; //!< sample rate
-					double ms_; //!< time constant in ms
-					double coef_; //!< runtime coefficient
+					double m_sampleRate; //!< sample rate
+					double m_timeMs; //!< time constant in ms
+					double m_coefficient; //!< runtime coefficient
 					virtual void setCoef(); //!< coef calculation
 			};
 		}

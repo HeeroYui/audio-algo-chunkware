@@ -24,28 +24,29 @@
  */
 
 
-#include "EnvelopeDetector.h"
+#include <audio/algo/chunkware/debug.h>
+#include <audio/algo/chunkware/EnvelopeDetector.h>
 
 audio::algo::chunkware::EnvelopeDetector::EnvelopeDetector(double ms, double sampleRate) {
-	assert(sampleRate > 0.0);
-	assert(ms > 0.0);
-	sampleRate_ = sampleRate;
-	ms_ = ms;
+	AA_CHUNK_ASSERT(sampleRate > 0.0, "input function error");
+	AA_CHUNK_ASSERT(ms > 0.0, "input function error");
+	m_sampleRate = sampleRate;
+	m_timeMs = ms;
 	setCoef();
 }
 
 void audio::algo::chunkware::EnvelopeDetector::setTc(double ms) {
-	assert(ms > 0.0);
-	ms_ = ms;
+	AA_CHUNK_ASSERT(ms > 0.0, "input function error");
+	m_timeMs = ms;
 	setCoef();
 }
 
 void audio::algo::chunkware::EnvelopeDetector::setSampleRate(double sampleRate) {
-	assert(sampleRate > 0.0);
-	sampleRate_ = sampleRate;
+	AA_CHUNK_ASSERT(sampleRate > 0.0, "input function error");
+	m_sampleRate = sampleRate;
 	setCoef();
 }
 
 void audio::algo::chunkware::EnvelopeDetector::setCoef() {
-	coef_ = exp(-1000.0 / (ms_ * sampleRate_));
+	m_coefficient = exp(-1000.0 / (m_timeMs * m_sampleRate));
 }

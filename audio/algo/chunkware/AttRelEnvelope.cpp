@@ -24,27 +24,27 @@
  */
 
 
-#include "AttRelEnvelope.h"
+#include <audio/algo/chunkware/AttRelEnvelope.h>
 
-audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double att_ms, double rel_ms, double sampleRate) :
-  att_(att_ms, sampleRate),
-  rel_(rel_ms, sampleRate) {
+audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double m_attackms, double m_releasems, double sampleRate) :
+  m_attack(m_attackms, sampleRate),
+  m_release(m_releasems, sampleRate) {
 	
 }
 
 //-------------------------------------------------------------
 void audio::algo::chunkware::AttRelEnvelope::setAttack(double ms) {
-	att_.setTc(ms);
+	m_attack.setTc(ms);
 }
 
 //-------------------------------------------------------------
 void audio::algo::chunkware::AttRelEnvelope::setRelease(double ms) {
-	rel_.setTc(ms);
+	m_release.setTc(ms);
 }
 
 //-------------------------------------------------------------
 void audio::algo::chunkware::AttRelEnvelope::setSampleRate(double sampleRate) {
-	att_.setSampleRate(sampleRate);
-	rel_.setSampleRate(sampleRate);
+	m_attack.setSampleRate(sampleRate);
+	m_release.setSampleRate(sampleRate);
 }
 

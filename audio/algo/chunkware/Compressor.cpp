@@ -23,27 +23,28 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "Compressor.h"
+#include <audio/algo/chunkware/Compressor.h>
+#include <audio/algo/chunkware/debug.h>
 
 audio::algo::chunkware::Compresssor::Compresssor() :
   AttRelEnvelope(10.0, 100.0),
-  threshdB_(0.0),
-  ratio_(1.0),
-  envdB_(DC_OFFSET) {
+  m_threshdB(0.0),
+  m_ratio(1.0),
+  m_overThresholdEnvelopeDB(DC_OFFSET) {
 	
 }
 
 void audio::algo::chunkware::Compresssor::setThresh(double dB) {
-	threshdB_ = dB;
+	m_threshdB = dB;
 }
 
 void audio::algo::chunkware::Compresssor::setRatio(double ratio) {
-	assert(ratio > 0.0);
-	ratio_ = ratio;
+	AA_CHUNK_ASSERT(ratio > 0.0, "input function error");
+	m_ratio = ratio;
 }
 
 void audio::algo::chunkware::Compresssor::initRuntime() {
-	envdB_ = DC_OFFSET;
+	m_overThresholdEnvelopeDB = DC_OFFSET;
 }
 
 void audio::algo::chunkware::Compresssor::process(double &in1, double &in2) {
@@ -63,13 +64,13 @@ void audio::algo::chunkware::Compresssor::process(double &in1, double &in2, doub
 	keyLinked += DC_OFFSET;				// add DC offset to avoid log(0)
 	double keydB = lin2dB(keyLinked);	// convert linear -> dB
 	// threshold
-	double overdB = keydB - threshdB_;	// delta over threshold
+	double overdB = keydB - m_threshdB;	// delta over threshold
 	if (overdB < 0.0)
 		overdB = 0.0;
 	// attack/release
 	overdB += DC_OFFSET; // add DC offset to avoid denormal
-	AttRelEnvelope::run(overdB, envdB_); // run attack/release envelope
-	overdB = envdB_ - DC_OFFSET; // subtract DC offset
+	AttRelEnvelope::run(overdB, m_overThresholdEnvelopeDB); // run attack/release envelope
+	overdB = m_overThresholdEnvelopeDB - DC_OFFSET; // subtract DC offset
 	/* REGARDING THE DC OFFSET: In this case, since the offset is added before 
 	 * the attack/release processes, the envelope will never fall below the offset,
 	 * thereby avoiding denormals. However, to prevent the offset from causing
@@ -77,7 +78,7 @@ void audio::algo::chunkware::Compresssor::process(double &in1, double &in2, doub
 	 * a minimum value of 0dB.
 	 */
 	// transfer function
-	double gr = overdB * (ratio_ - 1.0);	// gain reduction (dB)
+	double gr = overdB * (m_ratio - 1.0);	// gain reduction (dB)
 	gr = dB2lin(gr);						// convert dB -> linear
 	// output gain
 	in1 *= gr;	// apply gain reduction to input

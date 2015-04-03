@@ -27,7 +27,7 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
 #define __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
 
-#include "EnvelopeDetector.h"
+#include <audio/algo/chunkware/EnvelopeDetector.h>
 
 namespace audio {
 	namespace algo {
@@ -37,24 +37,24 @@ namespace audio {
 			//-------------------------------------------------------------
 			class AttRelEnvelope {
 				public:
-					AttRelEnvelope(double att_ms = 10.0,
-					               double rel_ms = 100.0,
+					AttRelEnvelope(double m_attackms = 10.0,
+					               double m_releasems = 100.0,
 					               double sampleRate = 44100.0);
 					virtual ~AttRelEnvelope() {}
 					// attack time constant
 					virtual void   setAttack(double ms);
 					virtual double getAttack() const {
-						return att_.getTc();
+						return m_attack.getTc();
 					}
 					// release time constant
 					virtual void   setRelease(double ms);
 					virtual double getRelease() const {
-						return rel_.getTc();
+						return m_release.getTc();
 					}
 					// sample rate dependencies
 					virtual void   setSampleRate(double sampleRate);
 					virtual double getSampleRate() const {
-						return att_.getSampleRate();
+						return m_attack.getSampleRate();
 					}
 					// runtime function
 					void run(double in, double &state) {
@@ -65,15 +65,15 @@ namespace audio {
 						*/
 						if (in > state) {
 							// attack
-							att_.run(in, state);
+							m_attack.run(in, state);
 						} else {
 							// release
-							rel_.run(in, state);
+							m_release.run(in, state);
 						}
 					}
 				private:
-					EnvelopeDetector att_;
-					EnvelopeDetector rel_;
+					EnvelopeDetector m_attack;
+					EnvelopeDetector m_release;
 			};
 		}
 	}

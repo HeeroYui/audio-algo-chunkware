@@ -27,9 +27,9 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_H__
 #define __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_H__
 
-#include "header.h"
-#include "AttRelEnvelope.h"
-#include "Gain.h"
+#include <etk/types.h>
+#include <audio/algo/chunkware/AttRelEnvelope.h>
+#include <audio/algo/chunkware/Gain.h>
 
 namespace audio {
 	namespace algo {
@@ -42,10 +42,10 @@ namespace audio {
 					virtual void setThresh(double dB);
 					virtual void setRatio(double dB);
 					virtual double getThresh() const {
-						return threshdB_;
+						return m_threshdB;
 					}
 					virtual double getRatio()  const {
-						return ratio_;
+						return m_ratio;
 					}
 					// runtime
 					// call before runtime (in resume())
@@ -56,10 +56,10 @@ namespace audio {
 					void process(double &in1, double &in2, double keyLinked);
 				private:
 					// transfer function
-					double threshdB_;//!< threshold (dB)
-					double ratio_; //!< ratio (compression: < 1 ; expansion: > 1)
+					double m_threshdB;//!< threshold (dB)
+					double m_ratio; //!< ratio (compression: < 1 ; expansion: > 1)
 					// runtime variables
-					double envdB_; //!< over-threshold envelope (dB)
+					double m_overThresholdEnvelopeDB; //!< over-threshold envelope (dB)
 			};
 		}
 	}

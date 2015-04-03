@@ -27,7 +27,7 @@
 #ifndef __AUDIO_ALGO_CHUNKWARE_GAIN_H__
 #define __AUDIO_ALGO_CHUNKWARE_GAIN_H__
 
-#include "header.h"
+#include <etk/types.h>
 
 
 namespace audio {
