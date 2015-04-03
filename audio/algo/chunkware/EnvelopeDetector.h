@@ -24,28 +24,49 @@
  */
 
 
-#ifndef __AUDIO_ALGO_CHUNKWARE_GAIN_H__
-#define __AUDIO_ALGO_CHUNKWARE_GAIN_H__
+#ifndef __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
+#define __AUDIO_ALGO_CHUNKWARE_ENVELOPE_DETECTOR_H__
 
 #include "header.h"
-
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
 			//-------------------------------------------------------------
-			// gain functions
+			// DC offset (to prevent denormal)
 			//-------------------------------------------------------------
-			// linear -> dB conversion
-			static inline double lin2dB(double lin) {
-				static const double LOG_2_DB = 8.6858896380650365530225783783321;	// 20 / ln(10)
-				return log(lin) * LOG_2_DB;
-			}
-			// dB -> linear conversion
-			static inline double dB2lin(double dB) {
-				static const double DB_2_LOG = 0.11512925464970228420089957273422;	// ln(10) / 20
-				return exp(dB * DB_2_LOG);
-			}
+			// USE:
+			// 1. init envelope state to DC_OFFSET before processing
+			// 2. add to input before envelope runtime function
+			static const double DC_OFFSET = 1.0E-25;
+			//-------------------------------------------------------------
+			// envelope detector
+			//-------------------------------------------------------------
+			class EnvelopeDetector {
+				public:
+					EnvelopeDetector(double ms = 1.0,
+					                 double sampleRate = 44100.0);
+					virtual ~EnvelopeDetector() {}
+					// time constant
+					virtual void   setTc(double ms);
+					virtual double getTc() const {
+						return ms_;
+					}
+					// sample rate
+					virtual void   setSampleRate(double sampleRate);
+					virtual double getSampleRate() const {
+						return sampleRate_;
+					}
+					// runtime function
+					void run(double in, double &state) {
+						state = in + coef_ * (state - in);
+					}
+				protected:
+					double sampleRate_; //!< sample rate
+					double ms_; //!< time constant in ms
+					double coef_; //!< runtime coefficient
+					virtual void setCoef(); //!< coef calculation
+			};
 		}
 	}
 }

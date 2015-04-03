@@ -24,11 +24,28 @@
  */
 
 
-#ifndef __SIMPLE_HEADER_H__
-#define __SIMPLE_HEADER_H__
+#include "EnvelopeDetector.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+audio::algo::chunkware::EnvelopeDetector::EnvelopeDetector(double ms, double sampleRate) {
+	assert(sampleRate > 0.0);
+	assert(ms > 0.0);
+	sampleRate_ = sampleRate;
+	ms_ = ms;
+	setCoef();
+}
 
-#endif
+void audio::algo::chunkware::EnvelopeDetector::setTc(double ms) {
+	assert(ms > 0.0);
+	ms_ = ms;
+	setCoef();
+}
+
+void audio::algo::chunkware::EnvelopeDetector::setSampleRate(double sampleRate) {
+	assert(sampleRate > 0.0);
+	sampleRate_ = sampleRate;
+	setCoef();
+}
+
+void audio::algo::chunkware::EnvelopeDetector::setCoef() {
+	coef_ = exp(-1000.0 / (ms_ * sampleRate_));
+}

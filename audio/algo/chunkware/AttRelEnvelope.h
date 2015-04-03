@@ -24,28 +24,57 @@
  */
 
 
-#ifndef __AUDIO_ALGO_CHUNKWARE_GAIN_H__
-#define __AUDIO_ALGO_CHUNKWARE_GAIN_H__
+#ifndef __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
+#define __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
 
-#include "header.h"
-
+#include "EnvelopeDetector.h"
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
 			//-------------------------------------------------------------
-			// gain functions
+			// attack/release envelope
 			//-------------------------------------------------------------
-			// linear -> dB conversion
-			static inline double lin2dB(double lin) {
-				static const double LOG_2_DB = 8.6858896380650365530225783783321;	// 20 / ln(10)
-				return log(lin) * LOG_2_DB;
-			}
-			// dB -> linear conversion
-			static inline double dB2lin(double dB) {
-				static const double DB_2_LOG = 0.11512925464970228420089957273422;	// ln(10) / 20
-				return exp(dB * DB_2_LOG);
-			}
+			class AttRelEnvelope {
+				public:
+					AttRelEnvelope(double att_ms = 10.0,
+					               double rel_ms = 100.0,
+					               double sampleRate = 44100.0);
+					virtual ~AttRelEnvelope() {}
+					// attack time constant
+					virtual void   setAttack(double ms);
+					virtual double getAttack() const {
+						return att_.getTc();
+					}
+					// release time constant
+					virtual void   setRelease(double ms);
+					virtual double getRelease() const {
+						return rel_.getTc();
+					}
+					// sample rate dependencies
+					virtual void   setSampleRate(double sampleRate);
+					virtual double getSampleRate() const {
+						return att_.getSampleRate();
+					}
+					// runtime function
+					void run(double in, double &state) {
+						/* assumes that:
+						* positive delta = attack
+						* negative delta = release
+						* good for linear & log values
+						*/
+						if (in > state) {
+							// attack
+							att_.run(in, state);
+						} else {
+							// release
+							rel_.run(in, state);
+						}
+					}
+				private:
+					EnvelopeDetector att_;
+					EnvelopeDetector rel_;
+			};
 		}
 	}
 }

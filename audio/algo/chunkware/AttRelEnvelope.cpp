@@ -24,11 +24,27 @@
  */
 
 
-#ifndef __SIMPLE_HEADER_H__
-#define __SIMPLE_HEADER_H__
+#include "AttRelEnvelope.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double att_ms, double rel_ms, double sampleRate) :
+  att_(att_ms, sampleRate),
+  rel_(rel_ms, sampleRate) {
+	
+}
 
-#endif
+//-------------------------------------------------------------
+void audio::algo::chunkware::AttRelEnvelope::setAttack(double ms) {
+	att_.setTc(ms);
+}
+
+//-------------------------------------------------------------
+void audio::algo::chunkware::AttRelEnvelope::setRelease(double ms) {
+	rel_.setTc(ms);
+}
+
+//-------------------------------------------------------------
+void audio::algo::chunkware::AttRelEnvelope::setSampleRate(double sampleRate) {
+	att_.setSampleRate(sampleRate);
+	rel_.setSampleRate(sampleRate);
+}
+

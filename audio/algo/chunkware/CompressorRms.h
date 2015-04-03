@@ -24,11 +24,32 @@
  */
 
 
-#ifndef __SIMPLE_HEADER_H__
-#define __SIMPLE_HEADER_H__
+#ifndef __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
+#define __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+#include "Compressor.h"
+
+namespace audio {
+	namespace algo {
+		namespace chunkware {
+			class CompresssorRms : public Compresssor {
+				public:
+					CompresssorRms();
+					virtual ~CompresssorRms() {}
+					// sample rate
+					virtual void setSampleRate(double sampleRate);
+					// RMS window
+					virtual void setWindow(double ms);
+					virtual double getWindow() const { return ave_.getTc(); }
+					// runtime process
+					virtual void initRuntime();			// call before runtime (in resume())
+					void process(double &in1, double &in2);	// compressor runtime process
+				protected:
+					EnvelopeDetector ave_; //!< averager
+					double aveOfSqrs_; //!< average of squares
+			};
+		}
+	}
+}
 
 #endif

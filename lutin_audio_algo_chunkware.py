@@ -13,7 +13,8 @@ def create(target):
 		'audio/algo/chunkware/debug.cpp',
 		'audio/algo/chunkware/Compressor.cpp',
 		'audio/algo/chunkware/debug.cpp',
-		'audio/algo/chunkware/Envelope.cpp',
+		'audio/algo/chunkware/EnvelopeDetector.cpp',
+		'audio/algo/chunkware/AttRelEnvelope.cpp',
 		'audio/algo/chunkware/Gate.cpp',
 		'audio/algo/chunkware/Limiter.cpp'
 		])
