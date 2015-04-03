@@ -1,0 +1,32 @@
+#!/usr/bin/python
+import lutinModule as module
+import lutinTools as tools
+import lutinDebug as debug
+
+def get_desc():
+	return "audio_algo_aec : AEC basic algo"
+
+
+def create(target):
+	myModule = module.Module(__file__, 'audio_algo_chunkware', 'LIBRARY')
+	myModule.add_src_file([
+		'audio/algo/chunkware/debug.cpp',
+		'audio/algo/chunkware/Compressor.cpp',
+		'audio/algo/chunkware/debug.cpp',
+		'audio/algo/chunkware/Envelope.cpp',
+		'audio/algo/chunkware/Gate.cpp',
+		'audio/algo/chunkware/Limiter.cpp'
+		])
+	myModule.add_module_depend(['etk'])
+	myModule.add_export_path(tools.get_current_path(__file__))
+	# return module
+	return myModule
+
+
+
+
+
+
+
+
+

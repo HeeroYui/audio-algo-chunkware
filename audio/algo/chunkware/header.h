@@ -30,16 +30,16 @@
 #ifndef __SIMPLE_HEADER_H__
 #define __SIMPLE_HEADER_H__
 
-#if _MSC_VER > 1000			// MS Visual Studio
-#define INLINE __forceinline	// forces inline
-#define NOMINMAX				// for standard library min(), max()
-#define _USE_MATH_DEFINES		// for math constants
-#else						// other IDE's
-#define INLINE inline
+#if _MSC_VER > 1000
+	// MS Visual Studio
+	// for standard library min(), max()
+	#define NOMINMAX
+	// for math constants
+	#define _USE_MATH_DEFINES
 #endif
 
-#include <algorithm>	// for min(), max()
-#include <cassert>		// for assert()
+#include <algorithm>
+#include <cassert>
 #include <cmath>
 
-#endif	// end __SIMPLE_HEADER_H__
+#endif
