@@ -32,10 +32,10 @@
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class CompresssorRms : public audio::algo::chunkware::Compresssor {
+			class CompressorRms : public audio::algo::chunkware::Compressor {
 				public:
-					CompresssorRms();
-					virtual ~CompresssorRms() {}
+					CompressorRms();
+					virtual ~CompressorRms() {}
 					// sample rate
 					virtual void setSampleRate(double _sampleRate);
 					// RMS window

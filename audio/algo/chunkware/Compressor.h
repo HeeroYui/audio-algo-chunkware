@@ -28,36 +28,43 @@
 #define __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_H__
 
 #include <etk/types.h>
+#include <audio/format.h>
 #include <audio/algo/chunkware/AttRelEnvelope.h>
 #include <audio/algo/chunkware/Gain.h>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class Compresssor : public audio::algo::chunkware::AttRelEnvelope {
+			class Compressor : public audio::algo::chunkware::AttRelEnvelope {
 				public:
-					Compresssor();
-					virtual ~Compresssor() {}
-					// parameters
-					virtual void setThresh(double _dB);
-					virtual void setRatio(double _dB);
-					virtual double getThresh() const {
+					Compressor();
+					virtual ~Compressor() {}
+				protected:
+					double m_threshdB;//!< threshold (dB)
+				public:
+					virtual void setThreshold(double _dB);
+					virtual double getThreshold() const {
 						return m_threshdB;
 					}
+				protected:
+					double m_ratio; //!< ratio (compression: < 1 ; expansion: > 1)
+				public:
+					virtual void setRatio(double _dB);
 					virtual double getRatio()  const {
 						return m_ratio;
 					}
-					// runtime
+				public:
+					void process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel);
 					// call before runtime (in resume())
 					virtual void initRuntime();
+				protected:
+					// runtime
+					// compressor runtime process
+					void processMono(double& _in);
 					// compressor runtime process
 					void process(double& _in1, double& _in2);
 					// with stereo-linked key in
 					void process(double& _in1, double& _in2, double _keyLinked);
-				private:
-					// transfer function
-					double m_threshdB;//!< threshold (dB)
-					double m_ratio; //!< ratio (compression: < 1 ; expansion: > 1)
 					// runtime variables
 					double m_overThresholdEnvelopeDB; //!< over-threshold envelope (dB)
 			};

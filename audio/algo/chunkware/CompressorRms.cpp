@@ -27,27 +27,27 @@
 #include <audio/algo/chunkware/CompressorRms.h>
 
 
-audio::algo::chunkware::CompresssorRms::CompresssorRms() :
+audio::algo::chunkware::CompressorRms::CompressorRms() :
   m_averager(5.0),
   m_averageSuares(DC_OFFSET) {
 	
 }
 
-void audio::algo::chunkware::CompresssorRms::setSampleRate(double _sampleRate) {
-	audio::algo::chunkware::Compresssor::setSampleRate(_sampleRate);
+void audio::algo::chunkware::CompressorRms::setSampleRate(double _sampleRate) {
+	audio::algo::chunkware::Compressor::setSampleRate(_sampleRate);
 	m_averager.setSampleRate(_sampleRate);
 }
 
-void audio::algo::chunkware::CompresssorRms::setWindow(double _ms) {
+void audio::algo::chunkware::CompressorRms::setWindow(double _ms) {
 	m_averager.setTc(_ms);
 }
 
-void audio::algo::chunkware::CompresssorRms::initRuntime() {
-	audio::algo::chunkware::Compresssor::initRuntime();
+void audio::algo::chunkware::CompressorRms::initRuntime() {
+	audio::algo::chunkware::Compressor::initRuntime();
 	m_averageSuares = DC_OFFSET;
 }
 
-void audio::algo::chunkware::CompresssorRms::process(double& _in1, double& _in2) {
+void audio::algo::chunkware::CompressorRms::process(double& _in1, double& _in2) {
 	// create sidechain
 	double inSq1 = _in1 * _in1;	// square input
 	double inSq2 = _in2 * _in2;
@@ -62,5 +62,5 @@ void audio::algo::chunkware::CompresssorRms::process(double& _in1, double& _in2)
 	 * giving comparable results.
 	 */
 	// rest of process
-	audio::algo::chunkware::Compresssor::process(_in1, _in2, rms);
+	audio::algo::chunkware::Compressor::process(_in1, _in2, rms);
 }

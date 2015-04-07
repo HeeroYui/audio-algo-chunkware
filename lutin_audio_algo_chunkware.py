@@ -19,7 +19,7 @@ def create(target):
 		'audio/algo/chunkware/GateRms.cpp',
 		'audio/algo/chunkware/Limiter.cpp'
 		])
-	myModule.add_module_depend(['etk'])
+	myModule.add_module_depend(['etk', 'audio'])
 	myModule.add_export_path(tools.get_current_path(__file__))
 	# return module
 	return myModule

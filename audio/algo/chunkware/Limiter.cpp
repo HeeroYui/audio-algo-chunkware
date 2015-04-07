@@ -43,7 +43,7 @@ audio::algo::chunkware::Limiter::Limiter() :
 	m_outputBuffer[ 1 ].resize(BUFFER_SIZE, 0.0);
 }
 
-void audio::algo::chunkware::Limiter::setThresh(double _dB) {
+void audio::algo::chunkware::Limiter::setThreshold(double _dB) {
 	m_threshdB = _dB;
 	m_threshold = dB2lin(_dB);
 }
@@ -73,11 +73,136 @@ void audio::algo::chunkware::Limiter::initRuntime() {
 	m_outputBuffer[ 1 ].assign(BUFFER_SIZE, 0.0);
 }
 
-void audio::algo::chunkware::Limiter::FastEnvelope::setCoef() {
+void audio::algo::chunkware::FastEnvelope::setCoef() {
 	// rises to 99% of in value over duration of time constant
-	m_coefficient = pow(0.01, (1000.0 / (m_timeMs * m_sampleRate)));
+	m_coefficient = std::pow(0.01, (1000.0 / (m_timeMs * m_sampleRate)));
 }
 
+void audio::algo::chunkware::Limiter::process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel) {
+	// TODO : Check init ...
+	if (_nbChannel != 1) {
+		AA_CHUNK_ERROR("Can not compress with Other than single channel: " << _nbChannel);
+	}
+	switch (_format) {
+		case audio::format_int16:
+			{
+				const int16_t* input = reinterpret_cast<const int16_t*>(_input);
+				int16_t* output = reinterpret_cast<int16_t*>(_output);
+				for (size_t iii=0; iii<_nbChunk ; ++iii) {
+					double val = input[iii];
+					val /= 32768.0;
+					processMono(val);
+					val *= 32768.0;
+					output[iii] = int16_t(std::avg(-32768.0, val*32768.0, 32767.0));
+				}
+			}
+			break;
+		case audio::format_double:
+			{
+				const double* input = reinterpret_cast<const double*>(_input);
+				double* output = reinterpret_cast<double*>(_output);
+				for (size_t iii=0; iii<_nbChunk ; ++iii) {
+					output[iii] = input[iii];
+					processMono(output[iii]);
+					//AA_CHUNK_INFO(" in=" << input[iii] << " => " << output[iii]);
+				}
+			}
+			break;
+		default:
+			AA_CHUNK_ERROR("Can not compress with unsupported format : " << _format);
+			return;
+	}
+	
+}
+
+
+void audio::algo::chunkware::Limiter::processMono(double& _in) {
+	double keyLink = std::abs(_in); // rectify input
+	// threshold
+	// we always want to feed the sidechain AT LEATS the threshold value
+	if (keyLink < m_threshold) {
+		keyLink = m_threshold;
+	}
+	// test:
+	// a) whether peak timer has "expired"
+	// b) whether new peak is greater than previous max peak
+	if ((++m_peakTimer >= m_peakHold) || (keyLink > m_maxPeak)) {
+		// if either condition is met:
+		m_peakTimer = 0; // reset peak timer
+		m_maxPeak = keyLink; // assign new peak to max peak
+	}
+	/* REGARDING THE MAX PEAK: This method assumes that the only important
+	 * sample in a look-ahead buffer would be the highest peak. As such,
+	 * instead of storing all samples in a look-ahead buffer, it only stores
+	 * the max peak, and compares all incoming samples to that one.
+	 * The max peak has a hold time equal to what the look-ahead buffer
+	 * would have been, which is tracked by a timer (counter). When this
+	 * timer expires, the sample would have exited from the buffer. Therefore,
+	 * a new sample must be assigned to the max peak. We assume that the next
+	 * highest sample in our theoretical buffer is the current input sample.
+	 * In reality, we know this is probably NOT the case, and that there has
+	 * been another sample, slightly lower than the one before it, that has
+	 * passed the input. If we do not account for this possibility, our gain
+	 * reduction could be insufficient, resulting in an "over" at the output.
+	 * To remedy this, we simply apply a suitably long release stage in the
+	 * envelope follower.
+	 */
+	// attack/release
+	if (m_maxPeak > m_overThresholdEnvelope) {
+		// run attack phase
+		m_attack.run(m_maxPeak, m_overThresholdEnvelope);
+	} else {
+		// run release phase
+		m_release.run(m_maxPeak, m_overThresholdEnvelope);
+	}
+	/* REGARDING THE ATTACK: This limiter achieves "look-ahead" detection
+	 * by allowing the envelope follower to attack the max peak, which is
+	 * held for the duration of the attack phase -- unless a new, higher
+	 * peak is detected. The output signal is buffered so that the gain
+	 * reduction is applied in advance of the "offending" sample.
+	 */
+	
+	/* NOTE: a DC offset is not necessary for the envelope follower,
+	 * as neither the max peak nor envelope should fall below the
+	 * threshold (which is assumed to be around 1.0 linear).
+	 */
+	// gain reduction
+	double gR = m_threshold / m_overThresholdEnvelope;
+	// unload current buffer index
+	// (m_cursor - delay) & m_bufferMask gets sample from [delay] samples ago
+	// m_bufferMask variable wraps index
+	unsigned int delayIndex = (m_cursor - m_peakHold) & m_bufferMask;
+	double delay1 = m_outputBuffer[0][delayIndex];
+	//double delay2 = m_outputBuffer[1][delayIndex];
+	// load current buffer index and advance current index
+	// m_bufferMask wraps m_cursor index
+	m_outputBuffer[0][m_cursor] = _in;
+	//m_outputBuffer[1][m_cursor] = _in2;
+	++m_cursor &= m_bufferMask;
+	// output gain
+	_in = delay1 * gR;	// apply gain reduction to input
+	//_in2 = delay2 * gR;
+	/* REGARDING THE GAIN REDUCTION: Due to the logarithmic nature
+	 * of the attack phase, the sidechain will never achieve "full"
+	 * attack. (Actually, it is only guaranteed to achieve 99% of
+	 * the input value over the given time constant.) As such, the
+	 * limiter cannot achieve "brick-wall" limiting. There are 2
+	 * workarounds:
+	 *
+	 * 1) Set the threshold slightly lower than the desired threshold.
+	 *		i.e. 0.0dB -> -0.1dB or even -0.5dB
+	 *
+	 * 2) Clip the output at the threshold, as such:
+	 *
+	 *		if (in1 > m_threshold) in1 = m_threshold;
+	 *		else if (in1 < -m_threshold) in1 = -m_threshold;
+	 *
+	 *		if (in2 > m_threshold) in2 = m_threshold;
+	 *		else if (in2 < -m_threshold) in2 = -m_threshold;
+	 *
+	 *		(... or replace with your favorite branchless clipper ...)
+	 */
+}
 
 void audio::algo::chunkware::Limiter::process(double& _in1, double& _in2) {
 	// create sidechain
@@ -86,8 +211,9 @@ void audio::algo::chunkware::Limiter::process(double& _in1, double& _in2) {
 	double keyLink = std::max(rect1, rect2); // link channels with greater of 2
 	// threshold
 	// we always want to feed the sidechain AT LEATS the threshold value
-	if (keyLink < m_threshold)
+	if (keyLink < m_threshold) {
 		keyLink = m_threshold;
+	}
 	// test:
 	// a) whether peak timer has "expired"
 	// b) whether new peak is greater than previous max peak

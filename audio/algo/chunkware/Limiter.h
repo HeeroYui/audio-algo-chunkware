@@ -28,68 +28,102 @@
 #define __AUDIO_ALGO_CHUNKWARE_LIMITER_H__
 
 #include <etk/types.h>
+#include <audio/format.h>
 #include <audio/algo/chunkware/AttRelEnvelope.h>
 #include <audio/algo/chunkware/Gain.h>
+#include <etk/chrono.h>
 #include <vector>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
+			// class for faster attack/release
+			class FastEnvelope : public audio::algo::chunkware::EnvelopeDetector {
+				public:
+					FastEnvelope(double _ms = 1.0, double _sampleRate = 44100.0) :
+					  EnvelopeDetector(_ms, _sampleRate) {
+						
+					}
+					virtual ~FastEnvelope() {}
+				protected:
+					// override setCoef() - coefficient calculation
+					virtual void setCoef();
+			};
+			
 			class Limiter {
+				protected:
+					bool m_isConfigured;
 				public:
 					Limiter();
 					virtual ~Limiter() {}
-					// parameters
-					virtual void setThresh(double _dB);
-					virtual void setAttack(double _ms);
-					virtual void setRelease(double _ms);
-					virtual double getThresh() const {
+				
+				protected:
+					double m_threshdB; //!< threshold (dB)
+				public:
+					virtual void setThreshold(double _dB);
+					virtual double getThreshold() const {
 						return m_threshdB;
 					}
+				
+				protected:
+					std11::chrono::microseconds m_attackTime; //!< attaque time in ms.
+				public:
+					virtual void setAttack(double _ms);
 					virtual double getAttack() const {
 						return m_attack.getTc();
 					}
+				
+				protected:
+					std11::chrono::microseconds m_releaseTime; //!< attaque time in ms.
+				public:
+					virtual void setRelease(double _ms);
 					virtual double getRelease() const {
 						return m_release.getTc();
 					}
 					// latency
+				protected:
+					unsigned int m_peakHold; //!< peak hold (samples)
+				public:
 					virtual const unsigned int getLatency() const {
 						return m_peakHold;
 					}
+				
+				protected:
+					
+				public:
 					// sample rate dependencies
-					virtual void   setSampleRate(double _sampleRate);
+					virtual void setSampleRate(double _sampleRate);
 					virtual double getSampleRate() {
 						return m_attack.getSampleRate();
 					}
 					// runtime
 					// call before runtime (in resume())
 					virtual void initRuntime();
+					void process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel);
+				protected:
+					process(double* _out, const double* _in, int8_t _nbChannel);
+					process(float* _out, const float* _in, int8_t _nbChannel);
+					process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
 					// limiter runtime process
 					void process(double& _in1, double& _in2);
-				protected:
-					// class for faster attack/release
-					class FastEnvelope : public audio::algo::chunkware::EnvelopeDetector {
-						public:
-							FastEnvelope(double _ms = 1.0, double _sampleRate = 44100.0) :
-							  EnvelopeDetector(_ms, _sampleRate) {
-								
-							}
-							virtual ~FastEnvelope() {}
-						protected:
-							// override setCoef() - coefficient calculation
-							virtual void setCoef();
-					};
+					void processMono(double& _in);
 				private:
 					// transfer function
-					double m_threshdB; //!< threshold (dB)
+					
 					double m_threshold; //!< threshold (linear)
 					// max peak
-					unsigned int m_peakHold; //!< peak hold (samples)
+					
 					unsigned int m_peakTimer; //!< peak hold timer
 					double m_maxPeak; //!< max peak
 					// attack/release envelope
-					audio::algo::chunkware::Limiter::FastEnvelope m_attack; //!< attack
-					audio::algo::chunkware::Limiter::FastEnvelope m_release; //!< release
+					audio::algo::chunkware::FastEnvelope m_attack; //!< attack
+					audio::algo::chunkware::FastEnvelope m_release; //!< release
+					
+					
 					double m_overThresholdEnvelope; //!< over-threshold envelope (linear)
 					// buffer
 					// BUFFER_SIZE default can handle up to ~10ms at 96kHz

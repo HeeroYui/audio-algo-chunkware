@@ -6,7 +6,8 @@
 
 #include <test/debug.h>
 #include <etk/etk.h>
-#include <audio/algo/chunkware/.h>
+#include <audio/algo/chunkware/Compressor.h>
+#include <audio/algo/chunkware/Limiter.h>
 #include <etk/os/FSNode.h>
 #include <etk/chrono.h>
 
@@ -21,6 +22,8 @@ static std::vector<double> convert(const std::vector<int16_t>& _data) {
 	for (size_t iii=0; iii<_data.size(); ++iii) {
 		out[iii] = _data[iii];
 		out[iii] /= 32768.0;
+		out[iii] *= 2.1;
+		//APPL_INFO(" in=" << _data[iii] << " => " << out[iii]);
 	}
 	return out;
 }
@@ -43,7 +46,7 @@ int main(int _argc, const char** _argv) {
 	for (int32_t iii=0; iii<_argc ; ++iii) {
 		std::string data = _argv[iii];
 		if (etk::start_with(data,"--in=")) {
-			fbName = &data[5];
+			inputName = &data[5];
 		} else if (data == "--perf") {
 			perf = true;
 		} else if (etk::start_with(data,"--sample-rate=")) {
@@ -77,14 +80,10 @@ int main(int _argc, const char** _argv) {
 	std11::chrono::nanoseconds maxProcessing(0);
 	int32_t totalIteration = 0;
 	
-	
-	audio::algo::aec::Lms algo;
-	if (filterSize != 0) {
-		algo.setFilterSize(filterSize);
-	}
-	if (mu != 0.0f) {
-		algo.setMu(mu);
-	}
+	/*
+	audio::algo::chunkware::Compressor algo;
+	algo.setThreshold(-10);
+	algo.setRatio(-5);
 	int32_t lastPourcent = -1;
 	for (int32_t iii=0; iii<output.size()/blockSize; ++iii) {
 		if (lastPourcent != 100*iii / (output.size()/blockSize)) {
@@ -94,7 +93,7 @@ int main(int _argc, const char** _argv) {
 			APPL_VERBOSE("Process : " << iii*blockSize << "/" << int32_t(output.size()/blockSize)*blockSize);
 		}
 		std11::chrono::steady_clock::time_point timeStart = std11::chrono::steady_clock::now();
-		algo.process(&output[iii*blockSize], &fbData[iii*blockSize], &micData[iii*blockSize], blockSize);
+		algo.process(audio::format_double, &output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1);
 		if (perf == true) {
 			std11::chrono::steady_clock::time_point timeEnd = std11::chrono::steady_clock::now();
 			std11::chrono::nanoseconds time = timeEnd - timeStart;
@@ -102,9 +101,38 @@ int main(int _argc, const char** _argv) {
 			maxProcessing = std::max(maxProcessing, time);
 			totalTimeProcessing += time;
 			totalIteration++;
-			usleep(10000);
+			usleep(1000);
 		}
 	}
+	*/
+	audio::algo::chunkware::Limiter algo;
+	algo.setSampleRate(48000);
+	algo.setThreshold(0);
+	algo.setAttack(0.1);
+	algo.setRelease(2);
+	algo.initRuntime();
+	int32_t lastPourcent = -1;
+	for (int32_t iii=0; iii<output.size()/blockSize; ++iii) {
+		if (lastPourcent != 100*iii / (output.size()/blockSize)) {
+			lastPourcent = 100*iii / (output.size()/blockSize);
+			APPL_INFO("Process : " << iii*blockSize << "/" << int32_t(output.size()/blockSize)*blockSize << " " << lastPourcent << "/100");
+		} else {
+			APPL_VERBOSE("Process : " << iii*blockSize << "/" << int32_t(output.size()/blockSize)*blockSize);
+		}
+		std11::chrono::steady_clock::time_point timeStart = std11::chrono::steady_clock::now();
+		algo.process(audio::format_double, &output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1);
+		if (perf == true) {
+			std11::chrono::steady_clock::time_point timeEnd = std11::chrono::steady_clock::now();
+			std11::chrono::nanoseconds time = timeEnd - timeStart;
+			minProcessing = std::min(minProcessing, time);
+			maxProcessing = std::max(maxProcessing, time);
+			totalTimeProcessing += time;
+			totalIteration++;
+			usleep(1000);
+		}
+	}
+	
+	
 	if (perf == true) {
 		APPL_INFO("Performance Result: ");
 		APPL_INFO("    blockSize=" << blockSize << " sample");
