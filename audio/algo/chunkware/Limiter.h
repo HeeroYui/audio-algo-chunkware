@@ -101,13 +101,15 @@ namespace audio {
 					virtual void initRuntime();
 					void process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel);
 				protected:
-					process(double* _out, const double* _in, int8_t _nbChannel);
-					process(float* _out, const float* _in, int8_t _nbChannel);
-					process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
-					process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
-					process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
-					process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
-					process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					/*
+					void process(double* _out, const double* _in, int8_t _nbChannel);
+					void process(float* _out, const float* _in, int8_t _nbChannel);
+					void process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					void process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					void process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					void process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					void process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					*/
 					// limiter runtime process
 					void process(double& _in1, double& _in2);
 					void processMono(double& _in);

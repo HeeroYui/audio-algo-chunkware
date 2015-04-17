@@ -15,6 +15,7 @@ namespace appl {
 
 #define APPL_BASE(info,data) TK_LOG_BASE(appl::getLogId(),info,data)
 
+#define APPL_PRINT(data)         APPL_BASE(-1, data)
 #define APPL_CRITICAL(data)      APPL_BASE(1, data)
 #define APPL_ERROR(data)         APPL_BASE(2, data)
 #define APPL_WARNING(data)       APPL_BASE(3, data)

@@ -54,11 +54,11 @@ int main(int _argc, const char** _argv) {
 			sampleRate = etk::string_to_int32_t(data);
 		} else if (    data == "-h"
 		            || data == "--help") {
-			APPL_INFO("Help : ");
-			APPL_INFO("    ./xxx --fb=file.raw --mic=file.raw");
-			APPL_INFO("        --in=YYY.raw        inout file");
-			APPL_INFO("        --perf              Enable performence test (little slower but real performence test)");
-			APPL_INFO("        --sample-rate=XXXX  Signal sample rate (default 48000)");
+			APPL_PRINT("Help : ");
+			APPL_PRINT("    ./xxx --fb=file.raw --mic=file.raw");
+			APPL_PRINT("        --in=YYY.raw        inout file");
+			APPL_PRINT("        --perf              Enable performence test (little slower but real performence test)");
+			APPL_PRINT("        --sample-rate=XXXX  Signal sample rate (default 48000)");
 			exit(0);
 		}
 	}

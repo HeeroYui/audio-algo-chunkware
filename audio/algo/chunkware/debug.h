@@ -38,6 +38,7 @@ namespace audio {
 
 #define AA_CHUNK_BASE(info,data) TK_LOG_BASE(audio::algo::chunkware::getLogId(),info,data)
 
+#define AA_CHUNK_PRINT(data)      AA_CHUNK_BASE(-1, data)
 #define AA_CHUNK_CRITICAL(data)      AA_CHUNK_BASE(1, data)
 #define AA_CHUNK_ERROR(data)         AA_CHUNK_BASE(2, data)
 #define AA_CHUNK_WARNING(data)       AA_CHUNK_BASE(3, data)
