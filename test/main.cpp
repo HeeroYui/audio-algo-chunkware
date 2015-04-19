@@ -110,7 +110,7 @@ int main(int _argc, const char** _argv) {
 	algo.setThreshold(0);
 	algo.setAttack(0.1);
 	algo.setRelease(2);
-	algo.initRuntime();
+	algo.init(1);
 	int32_t lastPourcent = -1;
 	for (int32_t iii=0; iii<output.size()/blockSize; ++iii) {
 		if (lastPourcent != 100*iii / (output.size()/blockSize)) {
@@ -120,7 +120,7 @@ int main(int _argc, const char** _argv) {
 			APPL_VERBOSE("Process : " << iii*blockSize << "/" << int32_t(output.size()/blockSize)*blockSize);
 		}
 		std11::chrono::steady_clock::time_point timeStart = std11::chrono::steady_clock::now();
-		algo.process(audio::format_double, &output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1);
+		algo.process(&output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1, audio::format_double);
 		if (perf == true) {
 			std11::chrono::steady_clock::time_point timeEnd = std11::chrono::steady_clock::now();
 			std11::chrono::nanoseconds time = timeEnd - timeStart;

@@ -43,9 +43,9 @@ namespace audio {
 					virtual double getWindow() const {
 						return m_averager.getTc();
 					}
-					// runtime process
-					virtual void initRuntime(); // call before runtime (in resume())
-					void process(double& _in1, double& _in2); // compressor runtime process
+				public:
+					virtual void init();
+					void processDouble(double* _out, const double* _in, int8_t _nbChannel);
 				protected:
 					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
 					double m_averageSuares; //!< average of squares

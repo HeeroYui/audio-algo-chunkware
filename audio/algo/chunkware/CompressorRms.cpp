@@ -47,11 +47,12 @@ void audio::algo::chunkware::CompressorRms::initRuntime() {
 	m_averageSuares = DC_OFFSET;
 }
 
-void audio::algo::chunkware::CompressorRms::process(double& _in1, double& _in2) {
+void audio::algo::chunkware::CompressorRms::processDouble(double* _out, const double* _in, int8_t _nbChannel) {
+	double sum = 0.0;
 	// create sidechain
-	double inSq1 = _in1 * _in1;	// square input
-	double inSq2 = _in2 * _in2;
-	double sum = inSq1 + inSq2; // power summing
+	for (int8_t iii=0; iii<_nbChannel; ++iii) {
+		sum += _in[iii] * _in[iii]; // square input
+	}
 	sum += DC_OFFSET; // DC offset, to prevent denormal
 	m_averager.run(sum, m_averageSuares); // average of squares
 	double rms = sqrt(m_averageSuares); // rms (sort of ...)
@@ -62,5 +63,5 @@ void audio::algo::chunkware::CompressorRms::process(double& _in1, double& _in2) 
 	 * giving comparable results.
 	 */
 	// rest of process
-	audio::algo::chunkware::Compressor::process(_in1, _in2, rms);
+	processDouble(_out, _in, _nbChannel, rms);
 }

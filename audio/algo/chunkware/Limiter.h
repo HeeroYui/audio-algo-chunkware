@@ -40,7 +40,7 @@ namespace audio {
 			// class for faster attack/release
 			class FastEnvelope : public audio::algo::chunkware::EnvelopeDetector {
 				public:
-					FastEnvelope(double _ms = 1.0, double _sampleRate = 44100.0) :
+					FastEnvelope(double _ms = 1.0, double _sampleRate = 48000.0) :
 					  EnvelopeDetector(_ms, _sampleRate) {
 						
 					}
@@ -56,7 +56,41 @@ namespace audio {
 				public:
 					Limiter();
 					virtual ~Limiter() {}
-				
+				public:
+					/**
+					 * @brief Initialize the Algorithm
+					 * @param[in] _nbChannel Number of channel in the stream.
+					 */
+					virtual void init(int8_t _nbChannel);
+					/**
+					 * @brief Get list of format suported in input.
+					 * @return list of supported format
+					 */
+					std::vector<enum audio::format> getSupportedFormat();
+					/**
+					 * @brief Get list of algorithm format suported. No format convertion.
+					 * @return list of supported format
+					 */
+					std::vector<enum audio::format> getNativeSupportedFormat();
+					/**
+					 * @brief Main input algo process.
+					 * @param[in,out] _output Output data.
+					 * @param[in] _input Input data.
+					 * @param[in] _nbChunk Number of chunk in the input buffer.
+					 * @param[in] _nbChannel Number of channel in the stream.
+					 * @param[in] _format Input data format.
+					 */
+					void process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel = 2, enum audio::format _format = audio::format_double);
+				protected:
+					void processDouble(double* _out, const double* _in, int8_t _nbChannel);
+					/*
+					void process(float* _out, const float* _in, int8_t _nbChannel);
+					void process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					void process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					void process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					void process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					void process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					*/
 				protected:
 					double m_threshdB; //!< threshold (dB)
 				public:
@@ -91,49 +125,35 @@ namespace audio {
 				protected:
 					
 				public:
-					// sample rate dependencies
+					/** 
+					 * @brief Set sample rate.
+					 * @param[in] _sampleRate New sample rate value.
+					 */
 					virtual void setSampleRate(double _sampleRate);
+					/**
+					 * @brief Get current sample rate.
+					 * @return Vlue of the sample rate.
+					 */
 					virtual double getSampleRate() {
 						return m_attack.getSampleRate();
 					}
-					// runtime
-					// call before runtime (in resume())
-					virtual void initRuntime();
-					void process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel);
-				protected:
-					/*
-					void process(double* _out, const double* _in, int8_t _nbChannel);
-					void process(float* _out, const float* _in, int8_t _nbChannel);
-					void process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
-					void process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
-					void process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
-					void process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
-					void process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
-					*/
-					// limiter runtime process
-					void process(double& _in1, double& _in2);
-					void processMono(double& _in);
 				private:
 					// transfer function
-					
 					double m_threshold; //!< threshold (linear)
 					// max peak
-					
-					unsigned int m_peakTimer; //!< peak hold timer
+					uint32_t m_peakTimer; //!< peak hold timer
 					double m_maxPeak; //!< max peak
 					// attack/release envelope
 					audio::algo::chunkware::FastEnvelope m_attack; //!< attack
 					audio::algo::chunkware::FastEnvelope m_release; //!< release
-					
-					
 					double m_overThresholdEnvelope; //!< over-threshold envelope (linear)
 					// buffer
 					// BUFFER_SIZE default can handle up to ~10ms at 96kHz
 					// change this if you require more
 					static const int BUFFER_SIZE = 1024; //!< buffer size (always a power of 2!)
-					unsigned int m_bufferMask; //!< buffer mask
-					unsigned int m_cursor; //!< cursor
-					std::vector< double > m_outputBuffer[2]; //!< output buffer
+					uint32_t m_bufferMask; //!< buffer mask
+					uint32_t m_cursor; //!< cursor
+					std::vector<std::vector<double> > m_outputBuffer; //!< output buffer
 			};
 		}
 	}

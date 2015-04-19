@@ -36,9 +36,46 @@ namespace audio {
 	namespace algo {
 		namespace chunkware {
 			class Compressor : public audio::algo::chunkware::AttRelEnvelope {
+				protected:
+					bool m_isConfigured;
 				public:
 					Compressor();
 					virtual ~Compressor() {}
+				public:
+					/**
+					 * @brief Initialize the Algorithm
+					 */
+					virtual void init();
+					/**
+					 * @brief Get list of format suported in input.
+					 * @return list of supported format
+					 */
+					std::vector<enum audio::format> getSupportedFormat();
+					/**
+					 * @brief Get list of algorithm format suported. No format convertion.
+					 * @return list of supported format
+					 */
+					std::vector<enum audio::format> getNativeSupportedFormat();
+					/**
+					 * @brief Main input algo process.
+					 * @param[in,out] _output Output data.
+					 * @param[in] _input Input data.
+					 * @param[in] _nbChunk Number of chunk in the input buffer.
+					 * @param[in] _nbChannel Number of channel in the stream.
+					 * @param[in] _format Input data format.
+					 */
+					void process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel = 2, enum audio::format _format = audio::format_double);
+				protected:
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
+					void processDouble(double* _out, const double* _in, int8_t _nbChannel, double _value);
+					/*
+					void process(float* _out, const float* _in, int8_t _nbChannel);
+					void process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					void process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					void process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					void process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					void process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					*/
 				protected:
 					double m_threshdB;//!< threshold (dB)
 				public:
@@ -53,18 +90,7 @@ namespace audio {
 					virtual double getRatio()  const {
 						return m_ratio;
 					}
-				public:
-					void process(audio::format _format, void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel);
-					// call before runtime (in resume())
-					virtual void initRuntime();
 				protected:
-					// runtime
-					// compressor runtime process
-					void processMono(double& _in);
-					// compressor runtime process
-					void process(double& _in1, double& _in2);
-					// with stereo-linked key in
-					void process(double& _in1, double& _in2, double _keyLinked);
 					// runtime variables
 					double m_overThresholdEnvelopeDB; //!< over-threshold envelope (dB)
 			};
