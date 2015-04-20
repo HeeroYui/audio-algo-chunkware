@@ -26,6 +26,7 @@
 
 #include <audio/algo/chunkware/Gate.h>
 #include <audio/algo/chunkware/debug.h>
+#include <cmath>
 
 audio::algo::chunkware::Gate::Gate() :
   AttRelEnvelope(1.0, 100.0),

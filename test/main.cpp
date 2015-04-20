@@ -112,14 +112,14 @@ void performanceCompressor() {
 		perfo.toc();
 		usleep(1000);
 	}
-	APPL_INFO("Performance Compressor (double): ");
-	APPL_INFO("    blockSize=" << input.size() << " sample");
-	APPL_INFO("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                  << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                  << perfo.getMaxProcessing().count() << "ns ");
-	APPL_INFO("    min < avg < max= " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                  << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                  << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	APPL_PRINT("Performance Compressor (double): ");
+	APPL_PRINT("    blockSize=" << input.size() << " sample");
+	APPL_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
+	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing().count() << "ns ");
+	APPL_PRINT("    min < avg < max= " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                   << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                   << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 void performanceLimiter() {
@@ -154,14 +154,14 @@ void performanceLimiter() {
 		perfo.toc();
 		usleep(1000);
 	}
-	APPL_INFO("Performance Limiter (double): ");
-	APPL_INFO("    blockSize=" << input.size() << " sample");
-	APPL_INFO("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                  << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                  << perfo.getMaxProcessing().count() << "ns ");
-	APPL_INFO("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	APPL_PRINT("Performance Limiter (double): ");
+	APPL_PRINT("    blockSize=" << input.size() << " sample");
+	APPL_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
+	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing().count() << "ns ");
+	APPL_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 void performanceGate() {
@@ -196,14 +196,14 @@ void performanceGate() {
 		perfo.toc();
 		usleep(1000);
 	}
-	APPL_INFO("Performance Gate (double): ");
-	APPL_INFO("    blockSize=" << input.size() << " sample");
-	APPL_INFO("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                  << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                  << perfo.getMaxProcessing().count() << "ns ");
-	APPL_INFO("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	APPL_PRINT("Performance Gate (double): ");
+	APPL_PRINT("    blockSize=" << input.size() << " sample");
+	APPL_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
+	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing().count() << "ns ");
+	APPL_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 

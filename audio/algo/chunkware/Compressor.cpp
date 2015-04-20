@@ -25,6 +25,7 @@
 
 #include <audio/algo/chunkware/Compressor.h>
 #include <audio/algo/chunkware/debug.h>
+#include <cmath>
 
 audio::algo::chunkware::Compressor::Compressor() :
   AttRelEnvelope(10.0, 100.0),

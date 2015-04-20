@@ -26,6 +26,7 @@
 
 #include <audio/algo/chunkware/Limiter.h>
 #include <audio/algo/chunkware/debug.h>
+#include <cmath>
 
 audio::algo::chunkware::Limiter::Limiter() :
   m_isConfigured(false),
