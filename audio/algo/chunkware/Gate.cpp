@@ -25,45 +25,97 @@
 
 
 #include <audio/algo/chunkware/Gate.h>
+#include <audio/algo/chunkware/debug.h>
 
 audio::algo::chunkware::Gate::Gate() :
   AttRelEnvelope(1.0, 100.0),
-  m_threshdB(0.0),
+  m_thresholddB(0.0),
   m_threshold(1.0),
   m_overThresholdEnvelope(DC_OFFSET) {
 	
 }
 
-void audio::algo::chunkware::Gate::setThresh(double _dB) {
-	m_threshdB = _dB;
+void audio::algo::chunkware::Gate::setThreshold(double _dB) {
+	m_thresholddB = _dB;
 	m_threshold = dB2lin(_dB);
 }
 
-void audio::algo::chunkware::Gate::initRuntime() {
+
+void audio::algo::chunkware::Gate::init() {
 	m_overThresholdEnvelope = DC_OFFSET;
+	m_isConfigured = true;
 }
 
-
-void audio::algo::chunkware::Gate::process(double& _in1, double& _in2) {
-	// create sidechain
-	double rect1 = fabs(_in1);	// rectify input
-	double rect2 = fabs(_in2);
-	/* if desired, one could use another EnvelopeDetector to smooth
-	 * the rectified signal.
-	 */
-	double link = std::max(rect1, rect2);	// link channels with greater of 2
-	process(_in1, _in2, link);	// rest of process
+std::vector<enum audio::format> audio::algo::chunkware::Gate::getSupportedFormat() {
+	std::vector<enum audio::format> out = getNativeSupportedFormat();
+	out.push_back(audio::format_int16);
+	return out;
 }
 
-void audio::algo::chunkware::Gate::process(double& _in1, double& _in2, double _keyLinked) {
-	_keyLinked = fabs(_keyLinked);	// rectify (just in case)
+std::vector<enum audio::format> audio::algo::chunkware::Gate::getNativeSupportedFormat() {
+	std::vector<enum audio::format> out;
+	out.push_back(audio::format_double);
+	return out;
+}
+
+void audio::algo::chunkware::Gate::process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel, enum audio::format _format) {
+	// TODO : Check init ...
+	if (_nbChannel != 1) {
+		AA_CHUNK_ERROR("Can not compress with Other than single channel: " << _nbChannel);
+	}
+	switch (_format) {
+		case audio::format_int16:
+			{
+				const int16_t* input = reinterpret_cast<const int16_t*>(_input);
+				int16_t* output = reinterpret_cast<int16_t*>(_output);
+				double vals[_nbChannel];
+				for (size_t iii=0; iii<_nbChunk ; ++iii) {
+					for (int8_t kkk=0; kkk<_nbChannel ; ++kkk) {
+						vals[kkk] = double(input[iii*_nbChannel+kkk]) / 32768.0;
+					}
+					processDouble(vals, vals, _nbChannel);
+					for (int8_t kkk=0; kkk<_nbChannel ; ++kkk) {
+						vals[kkk] *= 32768.0;
+						output[iii*_nbChannel+kkk] = int16_t(std::avg(-32768.0, vals[kkk], 32767.0));
+					}
+				}
+			}
+			break;
+		case audio::format_double:
+			{
+				const double* input = reinterpret_cast<const double*>(_input);
+				double* output = reinterpret_cast<double*>(_output);
+				for (size_t iii=0; iii<_nbChunk ; ++iii) {
+					processDouble(&output[iii*_nbChannel], &input[iii*_nbChannel], _nbChannel);
+					//AA_CHUNK_INFO(" in=" << input[iii] << " => " << output[iii]);
+				}
+			}
+			break;
+		default:
+			AA_CHUNK_ERROR("Can not compress with unsupported format : " << _format);
+			return;
+	}
+	
+}
+
+void audio::algo::chunkware::Gate::processDouble(double* _out, const double* _in, int8_t _nbChannel) {
+	double keyLink = 0;
+	// get greater value;
+	for (int8_t iii=0; iii<_nbChannel; ++iii) {
+		double absValue = std::abs(_in[iii]);
+		keyLink = std::max(keyLink, absValue);
+	}
+	processDouble(_out, _in, _nbChannel, keyLink);
+}
+
+void audio::algo::chunkware::Gate::processDouble(double* _out, const double* _in, int8_t _nbChannel, double _keyLinked) {
 	// threshold
 	// key over threshold (0.0 or 1.0)
 	double over = double(_keyLinked > m_threshold);
 	// attack/release
-	over += DC_OFFSET;					// add DC offset to avoid denormal
+	over += DC_OFFSET; // add DC offset to avoid denormal
 	audio::algo::chunkware::AttRelEnvelope::run(over, m_overThresholdEnvelope);	// run attack/release
-	over = m_overThresholdEnvelope - DC_OFFSET;			// subtract DC offset
+	over = m_overThresholdEnvelope - DC_OFFSET; // subtract DC offset
 	/* REGARDING THE DC OFFSET: In this case, since the offset is added before 
 	 * the attack/release processes, the envelope will never fall below the offset,
 	 * thereby avoiding denormals. However, to prevent the offset from causing
@@ -71,6 +123,7 @@ void audio::algo::chunkware::Gate::process(double& _in1, double& _in2, double _k
 	 * a minimum value of 0dB.
 	 */
 	// output gain
-	_in1 *= over;	// apply gain reduction to input
-	_in2 *= over;
+	for (int8_t iii=0; iii<_nbChannel; ++iii) {
+		_out[iii] = _in[iii] * over;
+	}
 }

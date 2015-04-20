@@ -29,7 +29,7 @@
 
 audio::algo::chunkware::Limiter::Limiter() :
   m_isConfigured(false),
-  m_threshdB(0.0),
+  m_thresholddB(0.0),
   m_threshold(1.0),
   m_peakHold(0),
   m_peakTimer(0),
@@ -45,7 +45,7 @@ audio::algo::chunkware::Limiter::Limiter() :
 }
 
 void audio::algo::chunkware::Limiter::setThreshold(double _dB) {
-	m_threshdB = _dB;
+	m_thresholddB = _dB;
 	m_threshold = dB2lin(_dB);
 }
 

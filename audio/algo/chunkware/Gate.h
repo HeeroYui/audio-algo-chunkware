@@ -30,29 +30,61 @@
 #include <etk/types.h>
 #include <audio/algo/chunkware/AttRelEnvelope.h>
 #include <audio/algo/chunkware/Gain.h>
+#include <audio/format.h>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
 			class Gate : public AttRelEnvelope {
+				protected:
+					bool m_isConfigured;
 				public:
 					Gate();
 					virtual ~Gate() {}
+				public:
+					/**
+					 * @brief Initialize the Algorithm
+					 */
+					virtual void init();
+					/**
+					 * @brief Get list of format suported in input.
+					 * @return list of supported format
+					 */
+					virtual std::vector<enum audio::format> getSupportedFormat();
+					/**
+					 * @brief Get list of algorithm format suported. No format convertion.
+					 * @return list of supported format
+					 */
+					virtual std::vector<enum audio::format> getNativeSupportedFormat();
+					/**
+					 * @brief Main input algo process.
+					 * @param[in,out] _output Output data.
+					 * @param[in] _input Input data.
+					 * @param[in] _nbChunk Number of chunk in the input buffer.
+					 * @param[in] _nbChannel Number of channel in the stream.
+					 * @param[in] _format Input data format.
+					 */
+					virtual void process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel = 2, enum audio::format _format = audio::format_double);
+				protected:
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel, double _value);
+					/*
+					virtual void processFloat(float* _out, const float* _in, int8_t _nbChannel);
+					virtual void process16_16(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					virtual void process16_32(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					virtual void process24_32(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					virtual void process32_32(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					virtual void process32_64(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					*/
+				public:
 					// parameters
-					virtual void setThresh(double _dB);
-					virtual double getThresh() const {
-						return m_threshdB;
+					virtual void setThreshold(double _dB);
+					virtual double getThreshold() const {
+						return m_thresholddB;
 					}
-					// runtime
-					// call before runtime (in resume())
-					virtual void initRuntime();
-					// gate runtime process
-					void process(double& _in1, double& _in2);
-					// with stereo-linked key in
-					void process(double& _in1, double& _in2, double _keyLinked);
 				private:
 					// transfer function
-					double m_threshdB; //!< threshold (dB)
+					double m_thresholddB; //!< threshold (dB)
 					double m_threshold; //!< threshold (linear)
 					// runtime variables
 					double m_overThresholdEnvelope; //!< over-threshold envelope (linear)

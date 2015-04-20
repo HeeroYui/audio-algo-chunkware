@@ -45,7 +45,7 @@ namespace audio {
 					}
 				public:
 					virtual void init();
-					void processDouble(double* _out, const double* _in, int8_t _nbChannel);
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
 				protected:
 					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
 					double m_averageSuares; //!< average of squares

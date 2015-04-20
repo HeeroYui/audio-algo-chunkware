@@ -42,14 +42,13 @@ namespace audio {
 					virtual double getWindow() const {
 						return m_averager.getTc();
 					}
-					// runtime process
-					// call before runtime (in resume())
-					virtual void initRuntime();
-					// gate runtime process
-					void process(double& _in1, double& _in2);
+				public:
+					virtual void init();
+				protected:
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
 				private:
 					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
-					double m_averageSuares; //!< average of squares
+					double m_averageSquares; //!< average of squares
 			};
 		}
 	}

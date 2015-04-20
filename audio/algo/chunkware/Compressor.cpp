@@ -29,14 +29,14 @@
 audio::algo::chunkware::Compressor::Compressor() :
   AttRelEnvelope(10.0, 100.0),
   m_isConfigured(false),
-  m_threshdB(0.0),
+  m_thresholddB(0.0),
   m_ratio(1.0),
   m_overThresholdEnvelopeDB(DC_OFFSET) {
 	
 }
 
 void audio::algo::chunkware::Compressor::setThreshold(double _dB) {
-	m_threshdB = _dB;
+	m_thresholddB = _dB;
 }
 
 void audio::algo::chunkware::Compressor::setRatio(double _ratio) {
@@ -115,7 +115,7 @@ void audio::algo::chunkware::Compressor::processDouble(double* _out, const doubl
 	_keyLinked += DC_OFFSET; // add DC offset to avoid log(0)
 	double keydB = lin2dB(_keyLinked); // convert linear -> dB
 	// threshold
-	double overdB = keydB - m_threshdB; // delta over threshold
+	double overdB = keydB - m_thresholddB; // delta over threshold
 	if (overdB < 0.0) {
 		overdB = 0.0;
 	}

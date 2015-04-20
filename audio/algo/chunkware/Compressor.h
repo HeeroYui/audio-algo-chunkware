@@ -50,12 +50,12 @@ namespace audio {
 					 * @brief Get list of format suported in input.
 					 * @return list of supported format
 					 */
-					std::vector<enum audio::format> getSupportedFormat();
+					virtual std::vector<enum audio::format> getSupportedFormat();
 					/**
 					 * @brief Get list of algorithm format suported. No format convertion.
 					 * @return list of supported format
 					 */
-					std::vector<enum audio::format> getNativeSupportedFormat();
+					virtual std::vector<enum audio::format> getNativeSupportedFormat();
 					/**
 					 * @brief Main input algo process.
 					 * @param[in,out] _output Output data.
@@ -64,24 +64,24 @@ namespace audio {
 					 * @param[in] _nbChannel Number of channel in the stream.
 					 * @param[in] _format Input data format.
 					 */
-					void process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel = 2, enum audio::format _format = audio::format_double);
+					virtual void process(void* _output, const void* _input, size_t _nbChunk, int8_t _nbChannel = 2, enum audio::format _format = audio::format_double);
 				protected:
 					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
-					void processDouble(double* _out, const double* _in, int8_t _nbChannel, double _value);
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel, double _value);
 					/*
-					void process(float* _out, const float* _in, int8_t _nbChannel);
-					void process(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
-					void process(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
-					void process(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
-					void process(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
-					void process(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
+					virtual void processFloat(float* _out, const float* _in, int8_t _nbChannel);
+					virtual void process16_16(int16_16_t* _out, const int16_16_t* _in, int8_t _nbChannel);
+					virtual void process16_32(int16_32_t* _out, const int16_32_t* _in, int8_t _nbChannel);
+					virtual void process24_32(int24_32_t* _out, const int24_32_t* _in, int8_t _nbChannel);
+					virtual void process32_32(int32_32_t* _out, const int32_32_t* _in, int8_t _nbChannel);
+					virtual void process32_64(int32_64_t* _out, const int32_64_t* _in, int8_t _nbChannel);
 					*/
 				protected:
-					double m_threshdB;//!< threshold (dB)
+					double m_thresholddB;//!< threshold (dB)
 				public:
 					virtual void setThreshold(double _dB);
 					virtual double getThreshold() const {
-						return m_threshdB;
+						return m_thresholddB;
 					}
 				protected:
 					double m_ratio; //!< ratio (compression: < 1 ; expansion: > 1)

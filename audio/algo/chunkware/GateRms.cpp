@@ -28,7 +28,7 @@
 
 audio::algo::chunkware::GateRms::GateRms() :
   m_averager(5.0),
-  m_averageSuares(DC_OFFSET) {
+  m_averageSquares(DC_OFFSET) {
 	
 }
 
@@ -41,24 +41,26 @@ void audio::algo::chunkware::GateRms::setWindow(double _ms) {
 	m_averager.setTc(_ms);
 }
 
-void audio::algo::chunkware::GateRms::initRuntime() {
-	audio::algo::chunkware::Gate::initRuntime();
-	m_averageSuares = DC_OFFSET;
+void audio::algo::chunkware::GateRms::init() {
+	m_averageSquares = DC_OFFSET;
+	audio::algo::chunkware::Gate::init();
 }
 
-void audio::algo::chunkware::GateRms::process(double& _in1, double& _in2) {
+void audio::algo::chunkware::GateRms::processDouble(double* _out, const double* _in, int8_t _nbChannel) {
+	double sum = 0.0;
 	// create sidechain
-	double inSq1 = _in1 * _in1;	// square input
-	double inSq2 = _in2 * _in2;
-	double sum = inSq1 + inSq2;			// power summing
-	sum += DC_OFFSET;					// DC offset, to prevent denormal
-	m_averager.run(sum, m_averageSuares);		// average of squares
-	double rms = sqrt(m_averageSuares);	// rms (sort of ...)
+	for (int8_t iii=0; iii<_nbChannel; ++iii) {
+		sum += _in[iii] * _in[iii]; // square input
+	}
+	sum += DC_OFFSET; // DC offset, to prevent denormal
+	m_averager.run(sum, m_averageSquares); // average of squares
+	double rms = sqrt(m_averageSquares); // rms (sort of ...)
 	/* REGARDING THE RMS AVERAGER: Ok, so this isn't a REAL RMS
 	 * calculation. A true RMS is an FIR moving average. This
 	 * approximation is a 1-pole IIR. Nonetheless, in practice,
 	 * and in the interest of simplicity, this method will suffice,
 	 * giving comparable results.
 	 */
-	audio::algo::chunkware::Gate::process(_in1, _in2, rms);	// rest of process
+	// rest of process
+	audio::algo::chunkware::Gate::processDouble(_out, _in, _nbChannel, rms);
 }
