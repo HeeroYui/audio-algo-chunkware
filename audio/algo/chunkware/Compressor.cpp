@@ -66,6 +66,9 @@ void audio::algo::chunkware::Compressor::process(void* _output, const void* _inp
 	if (_nbChannel != 1) {
 		AA_CHUNK_ERROR("Can not compress with Other than single channel: " << _nbChannel);
 	}
+	if (m_isConfigured == false) {
+		AA_CHUNK_ERROR("Alogo not initialized ...");
+	}
 	switch (_format) {
 		case audio::format_int16:
 			{

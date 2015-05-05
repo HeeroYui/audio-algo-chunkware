@@ -105,7 +105,7 @@ void performanceCompressor() {
 	audio::algo::chunkware::Compressor algo;
 	algo.setThreshold(-10);
 	algo.setRatio(-5);
-	int32_t lastPourcent = -1;
+	algo.init();
 	for (int32_t iii=0; iii<4096; ++iii) {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
@@ -147,7 +147,6 @@ void performanceLimiter() {
 	algo.setAttack(0.1);
 	algo.setRelease(2);
 	algo.init(1);
-	int32_t lastPourcent = -1;
 	for (int32_t iii=0; iii<4096; ++iii) {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
@@ -189,7 +188,6 @@ void performanceGate() {
 	algo.setAttack(0.1);
 	algo.setRelease(2);
 	algo.init();
-	int32_t lastPourcent = -1;
 	for (int32_t iii=0; iii<4096; ++iii) {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
