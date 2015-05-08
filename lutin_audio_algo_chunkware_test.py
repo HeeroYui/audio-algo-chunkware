@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import lutinModule as module
-import lutinTools as tools
-import lutinDebug as debug
+import lutin.module as module
+import lutin.tools as tools
+import lutin.debug as debug
 
 def get_desc():
 	return "audio_algo_aec_test: test for LMS ALGO"
