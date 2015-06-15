@@ -29,7 +29,7 @@ install:
 
 script: 
   - lutin -C -P -c$BUILDER -mdebug -p audio_algo_chunkware_test
-  - ./out/Linux_x86_64/debug/staging/$BUILDER/audio_algo_chunkware_test/usr/bin/audio_algo_chunkware_test -l6
+#  - ./out/Linux_x86_64/debug/staging/$BUILDER/audio_algo_chunkware_test/usr/bin/audio_algo_chunkware_test -l6
 
 notifications:
   email:
