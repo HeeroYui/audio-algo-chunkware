@@ -4,11 +4,11 @@ import lutin.tools as tools
 import lutin.debug as debug
 
 def get_desc():
-	return "audio_algo_aec : AEC basic algo"
+	return "chunkware algo"
 
 
 def create(target):
-	myModule = module.Module(__file__, 'audio_algo_chunkware', 'LIBRARY')
+	myModule = module.Module(__file__, 'audio-algo-chunkware', 'LIBRARY')
 	myModule.add_src_file([
 		'audio/algo/chunkware/debug.cpp',
 		'audio/algo/chunkware/Compressor.cpp',
