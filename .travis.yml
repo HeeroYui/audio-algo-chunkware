@@ -10,7 +10,7 @@ os:
 
 before_script: 
   - cd ..
-  - git clone https://github.com/generic-library/gtest.git
+  - git clone https://github.com/generic-library/gtest-lutin.git
   - git clone https://github.com/atria-soft/etk.git
   - git clone https://github.com/musicdsp/audio.git
   - pwd
