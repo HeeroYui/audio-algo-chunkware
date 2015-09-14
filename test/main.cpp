@@ -10,7 +10,7 @@
 #include <audio/algo/chunkware/Limiter.h>
 #include <audio/algo/chunkware/Gate.h>
 #include <etk/os/FSNode.h>
-#include <etk/chrono.h>
+#include <chrono>
 
 #include <unistd.h>
 #undef __class__

@@ -31,7 +31,7 @@
 #include <audio/format.h>
 #include <audio/algo/chunkware/AttRelEnvelope.h>
 #include <audio/algo/chunkware/Gain.h>
-#include <etk/chrono.h>
+#include <chrono>
 #include <vector>
 
 namespace audio {

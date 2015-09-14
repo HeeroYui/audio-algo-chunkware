@@ -3,10 +3,6 @@ language:
 
 sudo: false
 
-compiler:
-  - clang
-  - gcc
-
 os:
   - linux
   - osx
@@ -26,19 +22,28 @@ addons:
 install:
   - pip install --user lutin
 
+env:
+  - CONF=debug   BOARD=Linux BUILDER=clang GCOV=
+  - CONF=release BOARD=Linux BUILDER=clang GCOV=
+  - CONF=debug   BOARD=Linux BUILDER=gcc   GCOV=
+  - CONF=release BOARD=Linux BUILDER=gcc   GCOV=
+  - CONF=debug   BOARD=Linux BUILDER=gcc   GCOV=--gcov
+
 before_script:
   - cd ..
+  - wget http://atria-soft.com/ci/coverage_send.py
+  - wget http://atria-soft.com/ci/test_send.py
+  - wget http://atria-soft.com/ci/warning_send.py
   - git clone https://github.com/generic-library/gtest-lutin.git
   - git clone https://github.com/atria-soft/etk.git
   - git clone https://github.com/musicdsp/audio.git
   - pwd
   - ls -l
-  - if [ "$CXX" == "clang++" ]; then BUILDER=clang; else BUILDER=gcc; fi
-  - if [ "$CXX" == "g++" ]; then COMPILATOR_OPTION="--compilator-version=4.9"; else COMPILATOR_OPTION=""; fi
+  - if [ "$BUILDER" == "gcc" ]; then COMPILATOR_OPTION="--compilator-version=4.9"; else COMPILATOR_OPTION=""; fi
 
 script:
-  - lutin -C -P -c$BUILDER $COMPILATOR_OPTION -mdebug -p audio-algo-chunkware-test
-#  - ./out/Linux_x86_64/debug/staging/$BUILDER/audio-algo-chunkware-test/usr/bin/audio-algo-chunkware-test -l6
+  - lutin -w -j4 -C -P -c $BUILDER $COMPILATOR_OPTION -m $CONF $GCOV -p audio-algo-chunkware-test
+#  - ./out/Linux_x86_64/$CONF/staging/$BUILDER/audio-algo-chunkware-test/usr/bin/audio-algo-chunkware-test -l6
 
 notifications:
   email:
