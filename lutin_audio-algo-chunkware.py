@@ -8,8 +8,8 @@ def get_desc():
 
 
 def create(target):
-	myModule = module.Module(__file__, 'audio-algo-chunkware', 'LIBRARY')
-	myModule.add_src_file([
+	my_module = module.Module(__file__, 'audio-algo-chunkware', 'LIBRARY')
+	my_module.add_src_file([
 		'audio/algo/chunkware/debug.cpp',
 		'audio/algo/chunkware/Compressor.cpp',
 		'audio/algo/chunkware/debug.cpp',
@@ -19,7 +19,7 @@ def create(target):
 		'audio/algo/chunkware/GateRms.cpp',
 		'audio/algo/chunkware/Limiter.cpp'
 		])
-	myModule.add_header_file([
+	my_module.add_header_file([
 		'audio/algo/chunkware/Compressor.h',
 		'audio/algo/chunkware/debug.h',
 		'audio/algo/chunkware/EnvelopeDetector.h',
@@ -28,10 +28,10 @@ def create(target):
 		'audio/algo/chunkware/GateRms.h',
 		'audio/algo/chunkware/Limiter.h'
 		])
-	myModule.add_module_depend(['etk', 'audio'])
-	myModule.add_path(tools.get_current_path(__file__))
+	my_module.add_module_depend(['etk', 'audio'])
+	my_module.add_path(tools.get_current_path(__file__))
 	# return module
-	return myModule
+	return my_module
 
 
 
