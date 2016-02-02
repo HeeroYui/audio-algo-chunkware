@@ -22,10 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
-#define __AUDIO_ALGO_CHUNKWARE_COMPRESSOR_RMS_H__
+#pragma once
 
 #include <audio/algo/chunkware/Compressor.h>
 
@@ -53,5 +50,3 @@ namespace audio {
 		}
 	}
 }
-
-#endif

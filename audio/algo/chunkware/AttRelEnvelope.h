@@ -22,10 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
-#define __AUDIO_ALGO_CHUNKWARE_ATT_REL_ENVELOPE_H__
+#pragma once
 
 #include <audio/algo/chunkware/EnvelopeDetector.h>
 
@@ -76,4 +73,3 @@ namespace audio {
 	}
 }
 
-#endif

@@ -22,10 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_LIMITER_H__
-#define __AUDIO_ALGO_CHUNKWARE_LIMITER_H__
+#pragma once
 
 #include <etk/types.h>
 #include <audio/format.h>
@@ -159,4 +156,3 @@ namespace audio {
 	}
 }
 
-#endif

@@ -23,8 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __AUDIO_ALGO_CHUNKWARE_DEBUG_H__
-#define __AUDIO_ALGO_CHUNKWARE_DEBUG_H__
+#pragma once
 
 #include <etk/log.h>
 
@@ -62,4 +61,3 @@ namespace audio {
 		} \
 	} while (0)
 
-#endif

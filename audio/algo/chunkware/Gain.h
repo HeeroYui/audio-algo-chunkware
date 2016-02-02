@@ -22,13 +22,9 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_GAIN_H__
-#define __AUDIO_ALGO_CHUNKWARE_GAIN_H__
+#pragma once
 
 #include <etk/types.h>
-
 
 namespace audio {
 	namespace algo {
@@ -47,4 +43,3 @@ namespace audio {
 	}
 }
 
-#endif

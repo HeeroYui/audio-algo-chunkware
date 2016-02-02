@@ -22,10 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_GATE_H__
-#define __AUDIO_ALGO_CHUNKWARE_GATE_H__
+#pragma once
 
 #include <etk/types.h>
 #include <audio/algo/chunkware/AttRelEnvelope.h>
@@ -93,4 +90,3 @@ namespace audio {
 	}
 }
 
-#endif

@@ -22,9 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-#ifndef __AUDIO_ALGO_CHUNKWARE_GATE_RMS_H__
-#define __AUDIO_ALGO_CHUNKWARE_GATE_RMS_H__
+#pragma once
 
 #include <audio/algo/chunkware/Gate.h>
 
@@ -54,4 +52,3 @@ namespace audio {
 	}
 }
 
-#endif
