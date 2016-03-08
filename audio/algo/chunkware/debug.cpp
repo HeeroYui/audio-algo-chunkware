@@ -27,7 +27,7 @@
 
 
 int32_t audio::algo::chunkware::getLogId() {
-	static int32_t g_val = etk::log::registerInstance("audio-algo-chunkware");
+	static int32_t g_val = elog::registerInstance("audio-algo-chunkware");
 	return g_val;
 }
 

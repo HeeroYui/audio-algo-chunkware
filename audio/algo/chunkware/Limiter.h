@@ -97,7 +97,7 @@ namespace audio {
 					}
 				
 				protected:
-					std11::chrono::microseconds m_attackTime; //!< attaque time in ms.
+					std::chrono::microseconds m_attackTime; //!< attaque time in ms.
 				public:
 					virtual void setAttack(double _ms);
 					virtual double getAttack() const {
@@ -105,7 +105,7 @@ namespace audio {
 					}
 				
 				protected:
-					std11::chrono::microseconds m_releaseTime; //!< attaque time in ms.
+					std::chrono::microseconds m_releaseTime; //!< attaque time in ms.
 				public:
 					virtual void setRelease(double _ms);
 					virtual double getRelease() const {

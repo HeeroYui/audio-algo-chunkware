@@ -41,11 +41,11 @@ static std::vector<int16_t> convert(const std::vector<double>& _data) {
 
 class Performance {
 	private:
-		std11::chrono::steady_clock::time_point m_timeStart;
-		std11::chrono::steady_clock::time_point m_timeStop;
-		std11::chrono::nanoseconds m_totalTimeProcessing;
-		std11::chrono::nanoseconds m_minProcessing;
-		std11::chrono::nanoseconds m_maxProcessing;
+		std::chrono::steady_clock::time_point m_timeStart;
+		std::chrono::steady_clock::time_point m_timeStop;
+		std::chrono::nanoseconds m_totalTimeProcessing;
+		std::chrono::nanoseconds m_minProcessing;
+		std::chrono::nanoseconds m_maxProcessing;
 		int32_t m_totalIteration;
 	public:
 		Performance() :
@@ -56,11 +56,11 @@ class Performance {
 			
 		}
 		void tic() {
-			m_timeStart = std11::chrono::steady_clock::now();
+			m_timeStart = std::chrono::steady_clock::now();
 		}
 		void toc() {
-			m_timeStop = std11::chrono::steady_clock::now();
-			std11::chrono::nanoseconds time = m_timeStop - m_timeStart;
+			m_timeStop = std::chrono::steady_clock::now();
+			std::chrono::nanoseconds time = m_timeStop - m_timeStart;
 			m_minProcessing = std::min(m_minProcessing, time);
 			m_maxProcessing = std::max(m_maxProcessing, time);
 			m_totalTimeProcessing += time;
@@ -68,13 +68,13 @@ class Performance {
 			
 		}
 		
-		std11::chrono::nanoseconds getTotalTimeProcessing() {
+		std::chrono::nanoseconds getTotalTimeProcessing() {
 			return m_totalTimeProcessing;
 		}
-		std11::chrono::nanoseconds getMinProcessing() {
+		std::chrono::nanoseconds getMinProcessing() {
 			return m_minProcessing;
 		}
-		std11::chrono::nanoseconds getMaxProcessing() {
+		std::chrono::nanoseconds getMaxProcessing() {
 			return m_maxProcessing;
 		}
 		int32_t getTotalIteration() {
