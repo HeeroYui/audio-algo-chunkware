@@ -13,9 +13,6 @@
 #include <chrono>
 
 #include <unistd.h>
-#undef __class__
-#define __class__ "test"
-
 
 static std::vector<double> convert(const std::vector<int16_t>& _data) {
 	std::vector<double> out;
