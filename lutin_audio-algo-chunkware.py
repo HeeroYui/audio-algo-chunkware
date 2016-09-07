@@ -47,7 +47,7 @@ def create(target, module_name):
 		'audio/algo/chunkware/Gain.h',
 		'audio/algo/chunkware/Limiter.h'
 		])
-	my_module.add_module_depend(['etk', 'audio'])
+	my_module.add_depend(['etk', 'audio'])
 	my_module.add_path(tools.get_current_path(__file__))
 	return my_module
 
