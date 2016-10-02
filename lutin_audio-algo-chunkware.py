@@ -38,14 +38,14 @@ def create(target, module_name):
 		'audio/algo/chunkware/Limiter.cpp'
 		])
 	my_module.add_header_file([
-		'audio/algo/chunkware/Compressor.h',
-		'audio/algo/chunkware/debug.h',
-		'audio/algo/chunkware/EnvelopeDetector.h',
-		'audio/algo/chunkware/AttRelEnvelope.h',
-		'audio/algo/chunkware/Gate.h',
-		'audio/algo/chunkware/GateRms.h',
-		'audio/algo/chunkware/Gain.h',
-		'audio/algo/chunkware/Limiter.h'
+		'audio/algo/chunkware/Compressor.hpp',
+		'audio/algo/chunkware/debug.hpp',
+		'audio/algo/chunkware/EnvelopeDetector.hpp',
+		'audio/algo/chunkware/AttRelEnvelope.hpp',
+		'audio/algo/chunkware/Gate.hpp',
+		'audio/algo/chunkware/GateRms.hpp',
+		'audio/algo/chunkware/Gain.hpp',
+		'audio/algo/chunkware/Limiter.hpp'
 		])
 	my_module.add_depend(['etk', 'audio'])
 	my_module.add_path(tools.get_current_path(__file__))

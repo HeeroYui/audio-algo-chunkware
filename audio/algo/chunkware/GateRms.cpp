@@ -24,7 +24,7 @@
  */
 
 
-#include <audio/algo/chunkware/GateRms.h>
+#include <audio/algo/chunkware/GateRms.hpp>
 
 audio::algo::chunkware::GateRms::GateRms() :
   m_averager(5.0),

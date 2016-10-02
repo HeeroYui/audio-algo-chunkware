@@ -24,7 +24,7 @@
  */
 
 
-#include <audio/algo/chunkware/AttRelEnvelope.h>
+#include <audio/algo/chunkware/AttRelEnvelope.hpp>
 
 audio::algo::chunkware::AttRelEnvelope::AttRelEnvelope(double _attackms, double _releasems, double _sampleRate) :
   m_attack(_attackms, _sampleRate),

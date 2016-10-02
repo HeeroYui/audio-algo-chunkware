@@ -24,39 +24,50 @@
  */
 #pragma once
 
-#include <etk/types.h>
+#include <audio/algo/chunkware/EnvelopeDetector.hpp>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			// USE:
-			// 1. init envelope state to DC_OFFSET before processing
-			// 2. add to input before envelope runtime function
-			static const double DC_OFFSET = 1.0E-25;
-			class EnvelopeDetector {
+			class AttRelEnvelope {
 				public:
-					EnvelopeDetector(double _ms = 1.0,
-					                 double _sampleRate = 44100.0);
-					virtual ~EnvelopeDetector() {}
-					// time constant
-					virtual void setTc(double _ms);
-					virtual double getTc() const {
-						return m_timeMs;
+					AttRelEnvelope(double _attackms = 10.0,
+					               double _releasems = 100.0,
+					               double _sampleRate = 44100.0);
+					virtual ~AttRelEnvelope() {}
+					// attack time constant
+					virtual void setAttack(double _ms);
+					virtual double getAttack() const {
+						return m_attack.getTc();
 					}
-					// sample rate
+					// release time constant
+					virtual void setRelease(double _ms);
+					virtual double getRelease() const {
+						return m_release.getTc();
+					}
+					// sample rate dependencies
 					virtual void setSampleRate(double _sampleRate);
 					virtual double getSampleRate() const {
-						return m_sampleRate;
+						return m_attack.getSampleRate();
 					}
 					// runtime function
 					void run(double _in, double& _state) {
-						_state = _in + m_coefficient * (_state - _in);
+						/* assumes that:
+						* positive delta = attack
+						* negative delta = release
+						* good for linear & log values
+						*/
+						if (_in > _state) {
+							// attack
+							m_attack.run(_in, _state);
+						} else {
+							// release
+							m_release.run(_in, _state);
+						}
 					}
-				protected:
-					double m_sampleRate; //!< sample rate
-					double m_timeMs; //!< time constant in ms
-					double m_coefficient; //!< runtime coefficient
-					virtual void setCoef(); //!< coef calculation
+				private:
+					audio::algo::chunkware::EnvelopeDetector m_attack;
+					audio::algo::chunkware::EnvelopeDetector m_release;
 			};
 		}
 	}

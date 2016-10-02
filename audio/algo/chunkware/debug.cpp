@@ -23,7 +23,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include "debug.h"
+#include "debug.hpp"
 
 
 int32_t audio::algo::chunkware::getLogId() {

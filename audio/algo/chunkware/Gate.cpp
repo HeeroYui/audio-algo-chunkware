@@ -24,8 +24,8 @@
  */
 
 
-#include <audio/algo/chunkware/Gate.h>
-#include <audio/algo/chunkware/debug.h>
+#include <audio/algo/chunkware/Gate.hpp>
+#include <audio/algo/chunkware/debug.hpp>
 #include <cmath>
 
 audio::algo::chunkware::Gate::Gate() :

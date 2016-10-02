@@ -4,12 +4,12 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <test-debug/debug.h>
-#include <etk/etk.h>
-#include <audio/algo/chunkware/Compressor.h>
-#include <audio/algo/chunkware/Limiter.h>
-#include <audio/algo/chunkware/Gate.h>
-#include <etk/os/FSNode.h>
+#include <test-debug/debug.hpp>
+#include <etk/etk.hpp>
+#include <audio/algo/chunkware/Compressor.hpp>
+#include <audio/algo/chunkware/Limiter.hpp>
+#include <audio/algo/chunkware/Gate.hpp>
+#include <etk/os/FSNode.hpp>
 #include <chrono>
 
 #include <unistd.h>

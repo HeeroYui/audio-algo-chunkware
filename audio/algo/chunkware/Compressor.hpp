@@ -24,10 +24,10 @@
  */
 #pragma once
 
-#include <etk/types.h>
-#include <audio/format.h>
-#include <audio/algo/chunkware/AttRelEnvelope.h>
-#include <audio/algo/chunkware/Gain.h>
+#include <etk/types.hpp>
+#include <audio/format.hpp>
+#include <audio/algo/chunkware/AttRelEnvelope.hpp>
+#include <audio/algo/chunkware/Gain.hpp>
 
 namespace audio {
 	namespace algo {

@@ -22,31 +22,42 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+
 #pragma once
 
-#include <audio/algo/chunkware/Compressor.h>
+#include <elog/log.hpp>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class CompressorRms : public audio::algo::chunkware::Compressor {
-				public:
-					CompressorRms();
-					virtual ~CompressorRms() {}
-					// sample rate
-					virtual void setSampleRate(double _sampleRate);
-					// RMS window
-					virtual void setWindow(double _ms);
-					virtual double getWindow() const {
-						return m_averager.getTc();
-					}
-				public:
-					virtual void init();
-					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
-				protected:
-					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
-					double m_averageSuares; //!< average of squares
-			};
+			int32_t getLogId();
 		}
 	}
 }
+
+#define AA_CHUNK_BASE(info,data) ELOG_BASE(audio::algo::chunkware::getLogId(),info,data)
+
+#define AA_CHUNK_PRINT(data)      AA_CHUNK_BASE(-1, data)
+#define AA_CHUNK_CRITICAL(data)      AA_CHUNK_BASE(1, data)
+#define AA_CHUNK_ERROR(data)         AA_CHUNK_BASE(2, data)
+#define AA_CHUNK_WARNING(data)       AA_CHUNK_BASE(3, data)
+#ifdef DEBUG
+	#define AA_CHUNK_INFO(data)          AA_CHUNK_BASE(4, data)
+	#define AA_CHUNK_DEBUG(data)         AA_CHUNK_BASE(5, data)
+	#define AA_CHUNK_VERBOSE(data)       AA_CHUNK_BASE(6, data)
+	#define AA_CHUNK_TODO(data)          AA_CHUNK_BASE(4, "TODO : " << data)
+#else
+	#define AA_CHUNK_INFO(data)          do { } while(false)
+	#define AA_CHUNK_DEBUG(data)         do { } while(false)
+	#define AA_CHUNK_VERBOSE(data)       do { } while(false)
+	#define AA_CHUNK_TODO(data)          do { } while(false)
+#endif
+
+#define AA_CHUNK_ASSERT(cond,data) \
+	do { \
+		if (!(cond)) { \
+			AA_CHUNK_CRITICAL(data); \
+			assert(!#cond); \
+		} \
+	} while (0)
+

@@ -24,7 +24,7 @@
  */
 #pragma once
 
-#include <audio/algo/chunkware/Gate.h>
+#include <audio/algo/chunkware/Gate.hpp>
 
 namespace audio {
 	namespace algo {

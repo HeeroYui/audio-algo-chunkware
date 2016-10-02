@@ -24,8 +24,8 @@
  */
 
 
-#include <audio/algo/chunkware/Limiter.h>
-#include <audio/algo/chunkware/debug.h>
+#include <audio/algo/chunkware/Limiter.hpp>
+#include <audio/algo/chunkware/debug.hpp>
 #include <cmath>
 
 audio::algo::chunkware::Limiter::Limiter() :

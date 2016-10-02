@@ -24,22 +24,29 @@
  */
 #pragma once
 
-#include <etk/types.h>
+#include <audio/algo/chunkware/Compressor.hpp>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			// linear -> dB conversion
-			static inline double lin2dB(double _lin) {
-				static const double LOG_2_DB = 8.6858896380650365530225783783321;	// 20 / ln(10)
-				return log(_lin) * LOG_2_DB;
-			}
-			// dB -> linear conversion
-			static inline double dB2lin(double _dB) {
-				static const double DB_2_LOG = 0.11512925464970228420089957273422;	// ln(10) / 20
-				return exp(_dB * DB_2_LOG);
-			}
+			class CompressorRms : public audio::algo::chunkware::Compressor {
+				public:
+					CompressorRms();
+					virtual ~CompressorRms() {}
+					// sample rate
+					virtual void setSampleRate(double _sampleRate);
+					// RMS window
+					virtual void setWindow(double _ms);
+					virtual double getWindow() const {
+						return m_averager.getTc();
+					}
+				public:
+					virtual void init();
+					virtual void processDouble(double* _out, const double* _in, int8_t _nbChannel);
+				protected:
+					audio::algo::chunkware::EnvelopeDetector m_averager; //!< averager
+					double m_averageSuares; //!< average of squares
+			};
 		}
 	}
 }
-

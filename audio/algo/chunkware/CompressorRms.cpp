@@ -24,7 +24,7 @@
  */
 
 
-#include <audio/algo/chunkware/CompressorRms.h>
+#include <audio/algo/chunkware/CompressorRms.hpp>
 
 
 audio::algo::chunkware::CompressorRms::CompressorRms() :

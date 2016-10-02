@@ -23,8 +23,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <audio/algo/chunkware/Compressor.h>
-#include <audio/algo/chunkware/debug.h>
+#include <audio/algo/chunkware/Compressor.hpp>
+#include <audio/algo/chunkware/debug.hpp>
 #include <cmath>
 
 audio::algo::chunkware::Compressor::Compressor() :

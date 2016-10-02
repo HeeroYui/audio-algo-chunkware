@@ -22,42 +22,43 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 #pragma once
 
-#include <elog/log.h>
+#include <etk/types.hpp>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			int32_t getLogId();
+			// USE:
+			// 1. init envelope state to DC_OFFSET before processing
+			// 2. add to input before envelope runtime function
+			static const double DC_OFFSET = 1.0E-25;
+			class EnvelopeDetector {
+				public:
+					EnvelopeDetector(double _ms = 1.0,
+					                 double _sampleRate = 44100.0);
+					virtual ~EnvelopeDetector() {}
+					// time constant
+					virtual void setTc(double _ms);
+					virtual double getTc() const {
+						return m_timeMs;
+					}
+					// sample rate
+					virtual void setSampleRate(double _sampleRate);
+					virtual double getSampleRate() const {
+						return m_sampleRate;
+					}
+					// runtime function
+					void run(double _in, double& _state) {
+						_state = _in + m_coefficient * (_state - _in);
+					}
+				protected:
+					double m_sampleRate; //!< sample rate
+					double m_timeMs; //!< time constant in ms
+					double m_coefficient; //!< runtime coefficient
+					virtual void setCoef(); //!< coef calculation
+			};
 		}
 	}
 }
-
-#define AA_CHUNK_BASE(info,data) ELOG_BASE(audio::algo::chunkware::getLogId(),info,data)
-
-#define AA_CHUNK_PRINT(data)      AA_CHUNK_BASE(-1, data)
-#define AA_CHUNK_CRITICAL(data)      AA_CHUNK_BASE(1, data)
-#define AA_CHUNK_ERROR(data)         AA_CHUNK_BASE(2, data)
-#define AA_CHUNK_WARNING(data)       AA_CHUNK_BASE(3, data)
-#ifdef DEBUG
-	#define AA_CHUNK_INFO(data)          AA_CHUNK_BASE(4, data)
-	#define AA_CHUNK_DEBUG(data)         AA_CHUNK_BASE(5, data)
-	#define AA_CHUNK_VERBOSE(data)       AA_CHUNK_BASE(6, data)
-	#define AA_CHUNK_TODO(data)          AA_CHUNK_BASE(4, "TODO : " << data)
-#else
-	#define AA_CHUNK_INFO(data)          do { } while(false)
-	#define AA_CHUNK_DEBUG(data)         do { } while(false)
-	#define AA_CHUNK_VERBOSE(data)       do { } while(false)
-	#define AA_CHUNK_TODO(data)          do { } while(false)
-#endif
-
-#define AA_CHUNK_ASSERT(cond,data) \
-	do { \
-		if (!(cond)) { \
-			AA_CHUNK_CRITICAL(data); \
-			assert(!#cond); \
-		} \
-	} while (0)
 

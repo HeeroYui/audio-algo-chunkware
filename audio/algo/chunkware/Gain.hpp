@@ -24,51 +24,21 @@
  */
 #pragma once
 
-#include <audio/algo/chunkware/EnvelopeDetector.h>
+#include <etk/types.hpp>
 
 namespace audio {
 	namespace algo {
 		namespace chunkware {
-			class AttRelEnvelope {
-				public:
-					AttRelEnvelope(double _attackms = 10.0,
-					               double _releasems = 100.0,
-					               double _sampleRate = 44100.0);
-					virtual ~AttRelEnvelope() {}
-					// attack time constant
-					virtual void setAttack(double _ms);
-					virtual double getAttack() const {
-						return m_attack.getTc();
-					}
-					// release time constant
-					virtual void setRelease(double _ms);
-					virtual double getRelease() const {
-						return m_release.getTc();
-					}
-					// sample rate dependencies
-					virtual void setSampleRate(double _sampleRate);
-					virtual double getSampleRate() const {
-						return m_attack.getSampleRate();
-					}
-					// runtime function
-					void run(double _in, double& _state) {
-						/* assumes that:
-						* positive delta = attack
-						* negative delta = release
-						* good for linear & log values
-						*/
-						if (_in > _state) {
-							// attack
-							m_attack.run(_in, _state);
-						} else {
-							// release
-							m_release.run(_in, _state);
-						}
-					}
-				private:
-					audio::algo::chunkware::EnvelopeDetector m_attack;
-					audio::algo::chunkware::EnvelopeDetector m_release;
-			};
+			// linear -> dB conversion
+			static inline double lin2dB(double _lin) {
+				static const double LOG_2_DB = 8.6858896380650365530225783783321;	// 20 / ln(10)
+				return log(_lin) * LOG_2_DB;
+			}
+			// dB -> linear conversion
+			static inline double dB2lin(double _dB) {
+				static const double DB_2_LOG = 0.11512925464970228420089957273422;	// ln(10) / 20
+				return exp(_dB * DB_2_LOG);
+			}
 		}
 	}
 }

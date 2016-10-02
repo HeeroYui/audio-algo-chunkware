@@ -24,8 +24,8 @@
  */
 
 
-#include <audio/algo/chunkware/debug.h>
-#include <audio/algo/chunkware/EnvelopeDetector.h>
+#include <audio/algo/chunkware/debug.hpp>
+#include <audio/algo/chunkware/EnvelopeDetector.hpp>
 
 audio::algo::chunkware::EnvelopeDetector::EnvelopeDetector(double _ms, double _sampleRate) {
 	AA_CHUNK_ASSERT(_sampleRate > 0.0, "input function error");
