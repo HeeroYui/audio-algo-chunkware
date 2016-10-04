@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import lutin.module as module
-import lutin.tools as tools
 import lutin.debug as debug
+import lutin.tools as tools
 
 
 def get_type():
@@ -25,8 +24,7 @@ def get_maintainer():
 def get_version():
 	return "version.txt"
 
-def create(target, module_name):
-	my_module = module.Module(__file__, module_name, get_type())
+def configure(target, my_module):
 	my_module.add_src_file([
 		'audio/algo/chunkware/debug.cpp',
 		'audio/algo/chunkware/Compressor.cpp',
@@ -48,8 +46,8 @@ def create(target, module_name):
 		'audio/algo/chunkware/Limiter.hpp'
 		])
 	my_module.add_depend(['etk', 'audio'])
-	my_module.add_path(tools.get_current_path(__file__))
-	return my_module
+	my_module.add_path(".")
+	return True
 
 
 
