@@ -11,8 +11,9 @@
 #include <audio/algo/chunkware/Gate.hpp>
 #include <etk/os/FSNode.hpp>
 #include <chrono>
+#include <thread>
 
-#include <unistd.h>
+
 
 static std::vector<double> convert(const std::vector<int16_t>& _data) {
 	std::vector<double> out;
@@ -107,7 +108,7 @@ void performanceCompressor() {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
 		perfo.toc();
-		usleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	TEST_PRINT("Performance Compressor (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
@@ -148,7 +149,7 @@ void performanceLimiter() {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
 		perfo.toc();
-		usleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	TEST_PRINT("Performance Limiter (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
@@ -189,7 +190,7 @@ void performanceGate() {
 		perfo.tic();
 		algo.process(&output[0], &input[0], input.size(), 1, audio::format_double);
 		perfo.toc();
-		usleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	TEST_PRINT("Performance Gate (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
@@ -270,7 +271,7 @@ int main(int _argc, const char** _argv) {
 		algo.process(audio::format_double, &output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1);
 		if (perf == true) {
 			perfo.toc();
-			usleep(1000);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 	*/
@@ -292,7 +293,7 @@ int main(int _argc, const char** _argv) {
 		algo.process(&output[iii*blockSize], &inputData[iii*blockSize], blockSize, 1, audio::format_double);
 		if (perf == true) {
 			perfo.toc();
-			usleep(1000);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 	
