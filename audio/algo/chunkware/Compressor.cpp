@@ -49,15 +49,15 @@ void audio::algo::chunkware::Compressor::init() {
 	m_isConfigured = true;
 }
 
-std::vector<enum audio::format> audio::algo::chunkware::Compressor::getSupportedFormat() {
-	std::vector<enum audio::format> out = getNativeSupportedFormat();
-	out.push_back(audio::format_int16);
+etk::Vector<enum audio::format> audio::algo::chunkware::Compressor::getSupportedFormat() {
+	etk::Vector<enum audio::format> out = getNativeSupportedFormat();
+	out.pushBack(audio::format_int16);
 	return out;
 }
 
-std::vector<enum audio::format> audio::algo::chunkware::Compressor::getNativeSupportedFormat() {
-	std::vector<enum audio::format> out;
-	out.push_back(audio::format_double);
+etk::Vector<enum audio::format> audio::algo::chunkware::Compressor::getNativeSupportedFormat() {
+	etk::Vector<enum audio::format> out;
+	out.pushBack(audio::format_double);
 	return out;
 }
 
@@ -82,7 +82,7 @@ void audio::algo::chunkware::Compressor::process(void* _output, const void* _inp
 					processDouble(vals, vals, _nbChannel);
 					for (int8_t kkk=0; kkk<_nbChannel ; ++kkk) {
 						vals[kkk] *= 32768.0;
-						output[iii*_nbChannel+kkk] = int16_t(std::avg(-32768.0, vals[kkk], 32767.0));
+						output[iii*_nbChannel+kkk] = int16_t(etk::avg(-32768.0, vals[kkk], 32767.0));
 					}
 				}
 			}
@@ -109,7 +109,7 @@ void audio::algo::chunkware::Compressor::processDouble(double* _out, const doubl
 	// get greater value;
 	for (int8_t iii=0; iii<_nbChannel; ++iii) {
 		double absValue = std::abs(_in[iii]);
-		keyLink = std::max(keyLink, absValue);
+		keyLink = etk::max(keyLink, absValue);
 	}
 	processDouble(_out, _in, _nbChannel, keyLink);
 }

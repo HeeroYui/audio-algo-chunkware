@@ -29,7 +29,7 @@
 #include <audio/algo/chunkware/AttRelEnvelope.hpp>
 #include <audio/algo/chunkware/Gain.hpp>
 #include <chrono>
-#include <vector>
+#include <etk/Vector.hpp>
 
 namespace audio {
 	namespace algo {
@@ -63,12 +63,12 @@ namespace audio {
 					 * @brief Get list of format suported in input.
 					 * @return list of supported format
 					 */
-					virtual std::vector<enum audio::format> getSupportedFormat();
+					virtual etk::Vector<enum audio::format> getSupportedFormat();
 					/**
 					 * @brief Get list of algorithm format suported. No format convertion.
 					 * @return list of supported format
 					 */
-					virtual std::vector<enum audio::format> getNativeSupportedFormat();
+					virtual etk::Vector<enum audio::format> getNativeSupportedFormat();
 					/**
 					 * @brief Main input algo process.
 					 * @param[in,out] _output Output data.
@@ -150,7 +150,7 @@ namespace audio {
 					static const int BUFFER_SIZE = 1024; //!< buffer size (always a power of 2!)
 					uint32_t m_bufferMask; //!< buffer mask
 					uint32_t m_cursor; //!< cursor
-					std::vector<std::vector<double> > m_outputBuffer; //!< output buffer
+					etk::Vector<etk::Vector<double> > m_outputBuffer; //!< output buffer
 			};
 		}
 	}

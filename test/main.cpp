@@ -15,8 +15,8 @@
 
 
 
-static std::vector<double> convert(const std::vector<int16_t>& _data) {
-	std::vector<double> out;
+static etk::Vector<double> convert(const etk::Vector<int16_t>& _data) {
+	etk::Vector<double> out;
 	out.resize(_data.size(), 0.0);
 	for (size_t iii=0; iii<_data.size(); ++iii) {
 		out[iii] = _data[iii];
@@ -27,11 +27,11 @@ static std::vector<double> convert(const std::vector<int16_t>& _data) {
 	return out;
 }
 
-static std::vector<int16_t> convert(const std::vector<double>& _data) {
-	std::vector<int16_t> out;
+static etk::Vector<int16_t> convert(const etk::Vector<double>& _data) {
+	etk::Vector<int16_t> out;
 	out.resize(_data.size(), 0.0);
 	for (size_t iii=0; iii<_data.size(); ++iii) {
-		out[iii] = int16_t(std::avg(-32768.0, _data[iii]*32768.0, 32767.0));
+		out[iii] = int16_t(etk::avg(-32768.0, _data[iii]*32768.0, 32767.0));
 	}
 	return out;
 }
@@ -59,8 +59,8 @@ class Performance {
 		void toc() {
 			m_timeStop = std::chrono::steady_clock::now();
 			std::chrono::nanoseconds time = m_timeStop - m_timeStart;
-			m_minProcessing = std::min(m_minProcessing, time);
-			m_maxProcessing = std::max(m_maxProcessing, time);
+			m_minProcessing = etk::min(m_minProcessing, time);
+			m_maxProcessing = etk::max(m_maxProcessing, time);
 			m_totalTimeProcessing += time;
 			m_totalIteration++;
 			
@@ -82,9 +82,9 @@ class Performance {
 };
 
 void performanceCompressor() {
-	std::vector<double> input;
+	etk::Vector<double> input;
 	input.resize(8192, 0);
-	std::vector<double> output;
+	etk::Vector<double> output;
 	output.resize(8192, 0);
 	double sampleRate = 48000.0;
 	{
@@ -121,9 +121,9 @@ void performanceCompressor() {
 }
 
 void performanceLimiter() {
-	std::vector<double> input;
+	etk::Vector<double> input;
 	input.resize(8192, 0);
-	std::vector<double> output;
+	etk::Vector<double> output;
 	output.resize(8192, 0);
 	double sampleRate = 48000.0;
 	{
@@ -162,9 +162,9 @@ void performanceLimiter() {
 }
 
 void performanceGate() {
-	std::vector<double> input;
+	etk::Vector<double> input;
 	input.resize(8192, 0);
-	std::vector<double> output;
+	etk::Vector<double> output;
 	output.resize(8192, 0);
 	double sampleRate = 48000.0;
 	{
@@ -208,12 +208,12 @@ void performanceGate() {
 int main(int _argc, const char** _argv) {
 	// the only one init for etk:
 	etk::init(_argc, _argv);
-	std::string inputName = "";
+	etk::String inputName = "";
 	bool performance = false;
 	bool perf = false;
 	int64_t sampleRate = 48000;
 	for (int32_t iii=0; iii<_argc ; ++iii) {
-		std::string data = _argv[iii];
+		etk::String data = _argv[iii];
 		if (etk::start_with(data,"--in=")) {
 			inputName = &data[5];
 		} else if (data == "--performance") {
@@ -246,10 +246,10 @@ int main(int _argc, const char** _argv) {
 		exit(-1);
 	}
 	TEST_INFO("Read input:");
-	std::vector<double> inputData = convert(etk::FSNodeReadAllDataType<int16_t>(inputName));
+	etk::Vector<double> inputData = convert(etk::FSNodeReadAllDataType<int16_t>(inputName));
 	TEST_INFO("    " << inputData.size() << " samples");
 	// resize output :
-	std::vector<double> output;
+	etk::Vector<double> output;
 	output.resize(inputData.size(), 0);
 	// process in chunk of 256 samples
 	int32_t blockSize = 256;
