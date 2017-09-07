@@ -11,7 +11,7 @@
 #include <audio/algo/chunkware/Gate.hpp>
 #include <etk/os/FSNode.hpp>
 #include <chrono>
-#include <thread>
+#include <ethread/Thread.hpp>
 
 
 
