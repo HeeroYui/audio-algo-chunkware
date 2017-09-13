@@ -142,7 +142,7 @@ void audio::algo::chunkware::Limiter::processDouble(double* _out, const double* 
 	double keyLink = 0;
 	// get greater value;
 	for (int8_t iii=0; iii<_nbChannel; ++iii) {
-		double absValue = std::abs(_in[iii]);
+		double absValue = etk::abs(_in[iii]);
 		keyLink = etk::max(keyLink, absValue);
 	}
 	// we always want to feed the sidechain AT LEATS the threshold value

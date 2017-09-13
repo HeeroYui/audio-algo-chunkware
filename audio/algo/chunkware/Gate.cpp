@@ -103,7 +103,7 @@ void audio::algo::chunkware::Gate::processDouble(double* _out, const double* _in
 	double keyLink = 0;
 	// get greater value;
 	for (int8_t iii=0; iii<_nbChannel; ++iii) {
-		double absValue = std::abs(_in[iii]);
+		double absValue = etk::abs(_in[iii]);
 		keyLink = etk::max(keyLink, absValue);
 	}
 	processDouble(_out, _in, _nbChannel, keyLink);
