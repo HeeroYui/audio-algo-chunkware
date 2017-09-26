@@ -81,7 +81,7 @@ void audio::algo::chunkware::Limiter::init(int8_t _nbChannel) {
 
 void audio::algo::chunkware::FastEnvelope::setCoef() {
 	// rises to 99% of in value over duration of time constant
-	m_coefficient = std::pow(0.01, (1000.0 / (m_timeMs * m_sampleRate)));
+	m_coefficient = etk::pow(0.01, (1000.0 / (m_timeMs * m_sampleRate)));
 }
 
 etk::Vector<enum audio::format> audio::algo::chunkware::Limiter::getSupportedFormat() {

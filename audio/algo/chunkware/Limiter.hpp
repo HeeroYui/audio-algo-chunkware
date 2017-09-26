@@ -28,7 +28,7 @@
 #include <audio/format.hpp>
 #include <audio/algo/chunkware/AttRelEnvelope.hpp>
 #include <audio/algo/chunkware/Gain.hpp>
-#include <chrono>
+#include <echrono/Steady.hpp>
 #include <etk/Vector.hpp>
 
 namespace audio {
@@ -97,7 +97,7 @@ namespace audio {
 					}
 				
 				protected:
-					std::chrono::microseconds m_attackTime; //!< attaque time in ms.
+					echrono::microseconds m_attackTime; //!< attaque time in ms.
 				public:
 					virtual void setAttack(double _ms);
 					virtual double getAttack() const {
@@ -105,7 +105,7 @@ namespace audio {
 					}
 				
 				protected:
-					std::chrono::microseconds m_releaseTime; //!< attaque time in ms.
+					echrono::microseconds m_releaseTime; //!< attaque time in ms.
 				public:
 					virtual void setRelease(double _ms);
 					virtual double getRelease() const {
