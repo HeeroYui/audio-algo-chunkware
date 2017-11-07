@@ -12,6 +12,7 @@
 #include <etk/os/FSNode.hpp>
 #include <echrono/Steady.hpp>
 #include <ethread/Thread.hpp>
+#include <ethread/tools.hpp>
 
 
 
@@ -41,14 +42,14 @@ class Performance {
 	private:
 		echrono::Steady m_timeStart;
 		echrono::Steady m_timeStop;
-		echrono::nanoseconds m_totalTimeProcessing;
-		echrono::nanoseconds m_minProcessing;
-		echrono::nanoseconds m_maxProcessing;
+		echrono::Duration m_totalTimeProcessing;
+		echrono::Duration m_minProcessing;
+		echrono::Duration m_maxProcessing;
 		int32_t m_totalIteration;
 	public:
 		Performance() :
 		  m_totalTimeProcessing(0),
-		  m_minProcessing(99999999999999LL),
+		  m_minProcessing(int64_t(99999999999999LL)),
 		  m_maxProcessing(0),
 		  m_totalIteration(0) {
 			
@@ -58,7 +59,7 @@ class Performance {
 		}
 		void toc() {
 			m_timeStop = echrono::Steady::now();
-			echrono::nanoseconds time = m_timeStop - m_timeStart;
+			echrono::Duration time = m_timeStop - m_timeStart;
 			m_minProcessing = etk::min(m_minProcessing, time);
 			m_maxProcessing = etk::max(m_maxProcessing, time);
 			m_totalTimeProcessing += time;
@@ -66,13 +67,13 @@ class Performance {
 			
 		}
 		
-		echrono::nanoseconds getTotalTimeProcessing() {
+		echrono::Duration getTotalTimeProcessing() {
 			return m_totalTimeProcessing;
 		}
-		echrono::nanoseconds getMinProcessing() {
+		echrono::Duration getMinProcessing() {
 			return m_minProcessing;
 		}
-		echrono::nanoseconds getMaxProcessing() {
+		echrono::Duration getMaxProcessing() {
 			return m_maxProcessing;
 		}
 		int32_t getTotalIteration() {
@@ -112,12 +113,12 @@ void performanceCompressor() {
 	}
 	TEST_PRINT("Performance Compressor (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
-	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                   << perfo.getMaxProcessing().count() << "ns ");
-	TEST_PRINT("    min < avg < max= " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                   << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing() << " < "
+	                                   << perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing());
+	TEST_PRINT("    min < avg < max= " << (float((perfo.getMinProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                   << (float(((perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                   << (float((perfo.getMaxProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 void performanceLimiter() {
@@ -153,12 +154,12 @@ void performanceLimiter() {
 	}
 	TEST_PRINT("Performance Limiter (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
-	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                   << perfo.getMaxProcessing().count() << "ns ");
-	TEST_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                    << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                    << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing() << " < "
+	                                   << perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing());
+	TEST_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float(((perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float((perfo.getMaxProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 void performanceGate() {
@@ -194,12 +195,12 @@ void performanceGate() {
 	}
 	TEST_PRINT("Performance Gate (double): ");
 	TEST_PRINT("    blockSize=" << input.size() << " sample");
-	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing().count() << "ns < "
-	                                   << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << "ns < "
-	                                   << perfo.getMaxProcessing().count() << "ns ");
-	TEST_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                    << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
-	                                    << (float((perfo.getMaxProcessing().count()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
+	TEST_PRINT("    min < avg < max =" << perfo.getMinProcessing() << " < "
+	                                   << perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration() << "ns < "
+	                                   << perfo.getMaxProcessing());
+	TEST_PRINT("    min < avg < max = " << (float((perfo.getMinProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float(((perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration())*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "% < "
+	                                    << (float((perfo.getMaxProcessing().get()*sampleRate)/double(input.size()))/1000000000.0)*100.0 << "%");
 }
 
 
@@ -301,13 +302,13 @@ int main(int _argc, const char** _argv) {
 	if (perf == true) {
 		TEST_INFO("Performance Result: ");
 		TEST_INFO("    blockSize=" << blockSize << " sample");
-		TEST_INFO("    min=" << perfo.getMinProcessing().count() << " ns");
-		TEST_INFO("    max=" << perfo.getMaxProcessing().count() << " ns");
-		TEST_INFO("    avg=" << perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration() << " ns");
+		TEST_INFO("    min=" << perfo.getMinProcessing());
+		TEST_INFO("    max=" << perfo.getMaxProcessing());
+		TEST_INFO("    avg=" << perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration() << " ns");
 		
-		TEST_INFO("    min=" << (float((perfo.getMinProcessing().count()*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
-		TEST_INFO("    max=" << (float((perfo.getMaxProcessing().count()*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
-		TEST_INFO("    avg=" << (float(((perfo.getTotalTimeProcessing().count()/perfo.getTotalIteration())*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
+		TEST_INFO("    min=" << (float((perfo.getMinProcessing().get()*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
+		TEST_INFO("    max=" << (float((perfo.getMaxProcessing().get()*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
+		TEST_INFO("    avg=" << (float(((perfo.getTotalTimeProcessing().get()/perfo.getTotalIteration())*sampleRate)/blockSize)/1000000000.0)*100.0 << " %");
 	}
 	etk::FSNodeWriteAllDataType<int16_t>("output.raw", convert(output));
 	

@@ -74,7 +74,6 @@ void audio::algo::chunkware::Limiter::init(int8_t _nbChannel) {
 	m_outputBuffer.resize(_nbChannel);
 	for (int8_t iii=0; iii<_nbChannel; ++iii) {
 		m_outputBuffer[iii].resize(BUFFER_SIZE, 0.0);
-		m_outputBuffer[iii].assign(BUFFER_SIZE, 0.0);
 	}
 	m_isConfigured = true;
 }
